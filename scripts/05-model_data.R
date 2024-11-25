@@ -17,6 +17,9 @@ analysis_data <- read_parquet("data/02-analysis_data/analysis_data.csv")
 
 ### Model data ####
 
+# Convert variables to factors
+analysis_data$month <- factor(analysis_data$month)
+analysis_data$police_division <- factor(analysis_data$police_division)
 
 # Model 1 for n = 1000
 set.seed(420)
@@ -28,7 +31,8 @@ motor_fatality_reduced_data <-
 
 motor_fatality_prediction_model <-
   stan_glm(
-    fatalities ~ hour + injury_collision + fail_to_remain_collision + 
+    fatalities ~ hour + injury_collision + date_of_week + month + 
+      police_division + fail_to_remain_collision + 
       property_damage_collision + automobile + motorcycle + passenger + 
       bicycle + pedestrian,
     data = motor_fatality_reduced_data,

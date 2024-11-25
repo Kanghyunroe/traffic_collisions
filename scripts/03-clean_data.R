@@ -80,6 +80,11 @@ cleaned_data <-
       pedestrian == "YES" ~ 1,
       pedestrian == "NO" ~ 0,
       pedestrian == "N/R" ~ NA_real_
+    ), 
+    bicycle = case_when(
+      bicycle == "YES" ~ 1,
+      bicycle == "NO" ~ 0,
+      bicycle == "N/R" ~ NA_real_
     )
   ) |>
   
