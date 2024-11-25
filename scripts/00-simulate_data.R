@@ -1,52 +1,78 @@
 #### Preamble ####
-# Purpose: Simulates a dataset of Australian electoral divisions, including the 
-  #state and party that won each division.
-# Author: Rohan Alexander
-# Date: 26 September 2024
-# Contact: rohan.alexander@utoronto.ca
+# Purpose: Simulates dataset of Motor Vehicle Collisions in toronto
+# Author: Kevin Roe
+# Date: 24 November 2024 
+# Contact: kevin.roe@mail.utoronto.ca 
 # License: MIT
 # Pre-requisites: The `tidyverse` package must be installed
-# Any other information needed? Make sure you are in the `starter_folder` rproj
-
+# Any other information needed? Make sure you are in the `traffic_collisions` rproj
 
 #### Workspace setup ####
 library(tidyverse)
-set.seed(853)
-
+set.seed(690)
 
 #### Simulate data ####
-# State names
-states <- c(
-  "New South Wales",
-  "Victoria",
-  "Queensland",
-  "South Australia",
-  "Western Australia",
-  "Tasmania",
-  "Northern Territory",
-  "Australian Capital Territory"
+# Month Names
+list_of_months <- c("January", "February", "March", "April", "May", "June", 
+                  "July", "August", "September", "October", "November", 
+                  "December")
+
+# Date Names
+list_of_dates <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
+                        "Saturday", "Sunday")
+
+# INSERT 
+
+# List of Police Divisions 
+list_of_divisions <- c("D23", "D42", "NSA", "D55", "D43", "D12", "D13", "D11", 
+                       "D31", "D14", "D53", "D52", "D41", "D33", "D22", "D51",
+                       "D32")
+
+simulated_data <- tibble(
+  # Use 1 through 1000 to represent unique IDs as the dataset is too large
+  id = 1:1000, 
+  
+  # Randomly Assign Months
+  month = sample(list_of_months, size = 1000, replace = TRUE),
+  
+  
+  # Randomly Assign Day of the Week
+  date_of_week = sample(list_of_dates, size = 1000, replace = TRUE),
+  
+  # Randomly Assign Years
+  year = sample(2014:2024, size = 1000, replace = TRUE), 
+  
+  # Randomly Assign Police Divisions
+  date_of_week = sample(list_of_divisions, size = 1000, replace = TRUE),
+  
+  # Randomly Fatalities Variable
+  fatalities <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly Injury Collision Variable
+  injury_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly fail_to_remain_collision Variable
+  fail_to_remain_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly property damage collision Variable
+  property_damage_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly automobile Variable
+  automobile <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly motorcycle Variable
+  motorcycle <- sample(c(0, 1), size = 1000, replace = TRUE),
+  
+  # Randomly passenger Variable
+  passenger <- sample(c(0, 1), size = 1000, replace = TRUE),
+
+  # Randomly bicycle Variable
+  bicycle <- sample(c(0, 1), size = 1000, replace = TRUE),  
+  
+  # Randomly pedestrian Variable
+  pedestrian <- sample(c(0, 1), size = 1000, replace = TRUE)
+  
 )
-
-# Political parties
-parties <- c("Labor", "Liberal", "Greens", "National", "Other")
-
-# Create a dataset by randomly assigning states and parties to divisions
-analysis_data <- tibble(
-  division = paste("Division", 1:151),  # Add "Division" to make it a character
-  state = sample(
-    states,
-    size = 151,
-    replace = TRUE,
-    prob = c(0.25, 0.25, 0.15, 0.1, 0.1, 0.1, 0.025, 0.025) # Rough state population distribution
-  ),
-  party = sample(
-    parties,
-    size = 151,
-    replace = TRUE,
-    prob = c(0.40, 0.40, 0.05, 0.1, 0.05) # Rough party distribution
-  )
-)
-
 
 #### Save data ####
-write_csv(analysis_data, "data/00-simulated_data/simulated_data.csv")
+write_csv(simulated_data, "data/00-simulated_data/simulated_data.csv")

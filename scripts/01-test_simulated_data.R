@@ -1,89 +1,127 @@
 #### Preamble ####
-# Purpose: Tests the structure and validity of the simulated Australian 
-  #electoral divisions dataset.
-# Author: Rohan Alexander
-# Date: 26 September 2024
-# Contact: rohan.alexander@utoronto.ca
+# Purpose: Tests the structure and validity of the simulated dataset
+# Author: Kevin Roe
+# Date: 24 November 2024 
+# Contact: kevin.roe@mail.utoronto.ca 
 # License: MIT
 # Pre-requisites: 
   # - The `tidyverse` package must be installed and loaded
   # - 00-simulate_data.R must have been run
-# Any other information needed? Make sure you are in the `starter_folder` rproj
+# Any other information needed? Make sure you are in the `traffic_collisions` rproj
 
 
 #### Workspace setup ####
 library(tidyverse)
 
-analysis_data <- read_csv("data/00-simulated_data/simulated_data.csv")
-
-# Test if the data was successfully loaded
-if (exists("analysis_data")) {
-  message("Test Passed: The dataset was successfully loaded.")
-} else {
-  stop("Test Failed: The dataset could not be loaded.")
-}
-
+test_data <- read_csv("data/00-simulated_data/simulated_data.csv")
 
 #### Test data ####
 
-# Check if the dataset has 151 rows
-if (nrow(analysis_data) == 151) {
-  message("Test Passed: The dataset has 151 rows.")
-} else {
-  stop("Test Failed: The dataset does not have 151 rows.")
-}
+# Check column class 
+class(test_data$month) == "character"
+class(test_data$date_of_week) == "character"
+class(test_data$year) == "number"
+class(test_data$hour) == "number"
+class(test_data$police_division) == "character"
+class(test_data$fatalities) == "number"
+class(test_data$fail_to_remain_collision) == "number"
+class(test_data$property_damage_collision) == "number"
+class(test_data$automobile) == "number"
+class(test_data$motorcycle) == "number"
+class(test_data$passenger) == "number"
+class(test_data$bicycle) == "number"
+class(test_data$pedestrian) == "number"
 
-# Check if the dataset has 3 columns
-if (ncol(analysis_data) == 3) {
-  message("Test Passed: The dataset has 3 columns.")
-} else {
-  stop("Test Failed: The dataset does not have 3 columns.")
-}
+# Test that the Dataset has 15 columns
+test_that("dataset has 15 columns", {
+  expect_equal(ncol(test_data), 16)
+})
 
-# Check if all values in the 'division' column are unique
-if (n_distinct(analysis_data$division) == nrow(analysis_data)) {
-  message("Test Passed: All values in 'division' are unique.")
-} else {
-  stop("Test Failed: The 'division' column contains duplicate values.")
-}
+# Test that 'month' column contains valid months 
+valid_months <- c("January", "February", "March", "April", "May", "June", 
+                  "July", "August", "September", "October", "November", 
+                  "December", NA
+)
 
-# Check if the 'state' column contains only valid Australian state names
-valid_states <- c("New South Wales", "Victoria", "Queensland", "South Australia", 
-                  "Western Australia", "Tasmania", "Northern Territory", 
-                  "Australian Capital Territory")
+# Test that 'date_of_week' column contains valid days of the week or NaN
+valid_date_of_week <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
+                        "Saturday", "Sunday", NA)
 
-if (all(analysis_data$state %in% valid_states)) {
-  message("Test Passed: The 'state' column contains only valid Australian state names.")
-} else {
-  stop("Test Failed: The 'state' column contains invalid state names.")
-}
+test_that("'date_of_week' contains valid days of the week or NaN", {
+  expect_true(all(is.na(test_data$date_of_week) | 
+                    test_data$date_of_week %in% valid_date_of_week))
+})
 
-# Check if the 'party' column contains only valid party names
-valid_parties <- c("Labor", "Liberal", "Greens", "National", "Other")
+test_that("'month' contains valid month names or NaN", {
+  expect_true(all(is.na(test_data$month) | test_data$month %in% valid_months))
+})
 
-if (all(analysis_data$party %in% valid_parties)) {
-  message("Test Passed: The 'party' column contains only valid party names.")
-} else {
-  stop("Test Failed: The 'party' column contains invalid party names.")
-}
+# Test that 'hours' column contains valid hours
+valid_hours <- 1:24
 
-# Check if there are any missing values in the dataset
-if (all(!is.na(analysis_data))) {
-  message("Test Passed: The dataset contains no missing values.")
-} else {
-  stop("Test Failed: The dataset contains missing values.")
-}
+test_that("'hour' contains valid hours (1-24)", {
+  expect_true(all(is.na(test_data$hour) | test_data$hour %in% valid_hours))
+})
 
-# Check if there are no empty strings in 'division', 'state', and 'party' columns
-if (all(analysis_data$division != "" & analysis_data$state != "" & analysis_data$party != "")) {
-  message("Test Passed: There are no empty strings in 'division', 'state', or 'party'.")
-} else {
-  stop("Test Failed: There are empty strings in one or more columns.")
-}
+# Test that 'fatalities' is binary (0 or 1)
+test_that("'fatalities' is binary", {
+  expect_true(all(test_data$fatalities %in% c(0, 1)))
+})
 
-# Check if the 'party' column has at least two unique values
-if (n_distinct(analysis_data$party) >= 2) {
-  message("Test Passed: The 'party' column contains at least two unique values.")
-} else {
-  stop("Test Failed: The 'party' column contains less than two unique values.")
-}
+# Test that 'fail_to_remain_collision' is binary (0 or 1)
+test_that("'fail_to_remain_collision' is binary", {
+  expect_true(all(test_data$fail_to_remain_collision %in% c(0, 1)))
+})
+
+# Test that 'property_damage_collision' is binary (0 or 1)
+test_that("'property_damage_collision' is binary", {
+  expect_true(all(test_data$property_damage_collision %in% c(0, 1)))
+})
+
+# Test that 'automobile' is binary (0 or 1)
+test_that("'automobile' is binary", {
+  expect_true(all(test_data$automobile %in% c(0, 1)))
+})
+
+# Test that 'motorcycle' is binary (0 or 1)
+test_that("'motorcycle' is binary", {
+  expect_true(all(test_data$motorcycle %in% c(0, 1)))
+})
+
+# Test that 'passenger' is binary (0 or 1)
+test_that("'passenger' is binary", {
+  expect_true(all(test_data$passenger %in% c(0, 1)))
+})
+
+# Test that 'bicycle' is binary (0 or 1)
+test_that("'bicycle' is binary", {
+  expect_true(all(test_data$bicycle %in% c(0, 1)))
+})
+
+# Test that 'pedestrian' is binary (0 or 1)
+test_that("'pedestrian' is binary", {
+  expect_true(all(test_data$pedestrian %in% c(0, 1)))
+})
+
+# No missing values in critical columns
+test_that("no missing values in critical columns", {
+  expect_true(all(!is.na(test_data$fatalities)))
+  expect_true(all(!is.na(test_data$fail_to_remain_collision)))
+  expect_true(all(!is.na(test_data$property_damage_collision)))
+  expect_true(all(!is.na(test_data$automobile)))
+})
+
+# Check for balanced data to ensure both 0 and 1 exist
+test_that("binary columns are reasonably balanced", {
+  expect_true(all(table(test_data$fatalities) > 0))  
+})
+
+# Check for Duplicates
+test_that("no duplicate rows", {
+  expect_equal(nrow(test_data), nrow(distinct(test_data)))
+})
+
+# Test for unique identifier in id column
+test_that("identifier is unique", {
+  expect_equal(nrow(test_data), length(unique(test_data$id)))
+})

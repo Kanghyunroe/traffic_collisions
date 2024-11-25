@@ -44,6 +44,15 @@ valid_months <- c("January", "February", "March", "April", "May", "June",
                   "December", NA
                   )
 
+# Test that 'date_of_week' column contains valid days of the week or NaN
+valid_date_of_week <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
+                        "Saturday", "Sunday", NA)
+
+test_that("'date_of_week' contains valid days of the week or NaN", {
+  expect_true(all(is.na(test_data$date_of_week) | 
+                    test_data$date_of_week %in% valid_date_of_week))
+})
+
 test_that("'month' contains valid month names or NaN", {
   expect_true(all(is.na(test_data$month) | test_data$month %in% valid_months))
 })
