@@ -6,7 +6,6 @@
 # License: MIT
 # Pre-requisites: Install necessary packages
 
-
 #### Workspace setup ####
 # install.packages("opendatatoronto")
 # install.packages("tidyverse")
@@ -14,10 +13,9 @@ library(opendatatoronto)
 library(tidyverse)
 
 #### Download data ####
-# Code sourced from OpenDataToronto
+# Code adapted from OpenDataToronto
 # Get package
 package <- show_package("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
-package
 
 # Get all resources for this package
 resources <- list_package_resources("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
