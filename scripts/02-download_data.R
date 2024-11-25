@@ -19,13 +19,13 @@ library(tidyverse)
 package <- show_package("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
 package
 
-# get all resources for this package
+# Get all resources for this package
 resources <- list_package_resources("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
 
-# identify datastore resources
+# Identify datastore resources
 datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
 
-# load the first datastore resource as a sample
+# Load the first datastore resource as a sample
 data <- filter(datastore_resources, row_number()==1) %>% get_resource()
 
 #### Save data ####
