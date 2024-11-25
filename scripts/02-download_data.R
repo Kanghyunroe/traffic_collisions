@@ -9,8 +9,11 @@
 #### Workspace setup ####
 # install.packages("opendatatoronto")
 # install.packages("tidyverse")
+# install.packages("arrow")
+
 library(opendatatoronto)
 library(tidyverse)
+library(arrow)
 
 #### Download data ####
 # Code adapted from OpenDataToronto 
@@ -27,6 +30,6 @@ library(tidyverse)
 data <- read_csv("https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/ec53f7b2-769b-4914-91fe-a37ee27a90b3/resource/3fed26a8-62fa-4c7c-8e76-9bacb6401d16/download/Traffic%20Collisions%20-%202952.csv")
 
 #### Save data ####
-write_csv(data, "data/01-raw_data/raw_data.csv") 
+write_parquet(data, "data/01-raw_data/raw_data.parquet") 
 
          

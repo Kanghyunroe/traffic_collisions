@@ -11,8 +11,9 @@
 #### Workspace setup ####
 library(tidyverse)
 library(testthat)
+library(arrow)
 
-data <- read_csv("data/02-analysis_data/analysis_data.csv")
+data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 
 #### Test data ####

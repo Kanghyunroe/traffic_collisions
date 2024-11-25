@@ -8,9 +8,11 @@
 
 #### Workspace setup ####
 library(tidyverse)
+library(arrow)
+
 
 #### Clean data ####
-raw_data <- read_csv("data/01-raw_data/raw_data.csv")
+raw_data <- read_parquet("data/01-raw_data/raw_data.parquet")
 
 
 cleaned_data <- 
@@ -85,5 +87,5 @@ cleaned_data <-
   drop_na()
 
 #### Save data ####
-write_parquet(x = cleaned_data, sink = "data/02-analysis_data/analysis_data.csv")
+write_parquet(x = cleaned_data, sink = "data/02-analysis_data/analysis_data.parquet")
 
