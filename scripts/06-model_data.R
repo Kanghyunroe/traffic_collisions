@@ -15,6 +15,7 @@ analysis_data <- read_csv("data/02-analysis_data/analysis_data.csv")
 
 ### Model data ####
 
+
 # Model 1 for n = 1000
 set.seed(420)
 
@@ -23,7 +24,7 @@ motor_fatality_reduced_data <-
   analysis_data |> 
   slice_sample(n = 1000)
 
-fatality_prediction_model <-
+motor_fatality_prediction_model <-
   stan_glm(
     fatalities ~ hour + injury_collision + fail_to_remain_collision + 
       property_damage_collision + automobile + motorcycle + passenger + 
@@ -38,8 +39,9 @@ fatality_prediction_model <-
 
 
 #### Save model ####
+summary(motor_fatality_prediction_model)
 saveRDS(
-  fatality_prediction_model,
+  motor_fatality_prediction_model,
   file = "models/motor_fatality_prediction_model.rds"
 )
 
