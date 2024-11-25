@@ -1,37 +1,46 @@
 #### Preamble ####
-# Purpose: Models... [...UPDATE THIS...]
-# Author: Rohan Alexander [...UPDATE THIS...]
-# Date: 11 February 2023 [...UPDATE THIS...]
-# Contact: rohan.alexander@utoronto.ca [...UPDATE THIS...]
+# Purpose: Models for Fatality Rates 
+# Author: Kevin Roe
+# Date: 24 November 2024 
+# Contact: kevin.roe@mail.utoronto.ca 
 # License: MIT
-# Pre-requisites: [...UPDATE THIS...]
-# Any other information needed? [...UPDATE THIS...]
-
+# Pre-requisites: Run 02-download_data.R and 03-clean_data to get cleaned dataset
 
 #### Workspace setup ####
 library(tidyverse)
 library(rstanarm)
 
 #### Read data ####
-analysis_data <- read_csv("data/analysis_data/analysis_data.csv")
+analysis_data <- read_csv("data/02-analysis_data/analysis_data.csv")
 
 ### Model data ####
-first_model <-
+
+# Model 1 for n = 1000
+set.seed(420)
+
+# get the reduced dataset of only 1000 randomly selected data entries
+motor_fatality_reduced_data <- 
+  analysis_data |> 
+  slice_sample(n = 1000)
+
+fatality_prediction_model <-
   stan_glm(
-    formula = flying_time ~ length + width,
-    data = analysis_data,
-    family = gaussian(),
+    fatalities ~ hour + injury_collision + fail_to_remain_collision + 
+      property_damage_collision + automobile + motorcycle + passenger + 
+      bicycle + pedestrian,
+    data = motor_fatality_reduced_data,
+    family = binomial(link = "probit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_aux = exponential(rate = 1, autoscale = TRUE),
-    seed = 853
+    prior_intercept = 
+      normal(location = 0, scale = 2.5, autoscale = TRUE),
+    seed = 420
   )
 
 
 #### Save model ####
 saveRDS(
-  first_model,
-  file = "models/first_model.rds"
+  fatality_prediction_model,
+  file = "models/motor_fatality_prediction_model.rds"
 )
 
 
