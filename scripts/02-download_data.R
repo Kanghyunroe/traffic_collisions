@@ -13,18 +13,18 @@ library(opendatatoronto)
 library(tidyverse)
 
 #### Download data ####
-# Code adapted from OpenDataToronto
+# Code adapted from OpenDataToronto 
 # Get package
-package <- show_package("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
+# package <- show_package("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
 
 # Get all resources for this package
-resources <- list_package_resources("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
+# resources <- list_package_resources("ec53f7b2-769b-4914-91fe-a37ee27a90b3")
 
 # Identify datastore resources
-datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
+# datastore_resources <- filter(resources, tolower(format) %in% c('csv', 'geojson'))
 
 # Load the first datastore resource as a sample
-data <- filter(datastore_resources, row_number()==1) %>% get_resource()
+data <- read_csv("https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/ec53f7b2-769b-4914-91fe-a37ee27a90b3/resource/3fed26a8-62fa-4c7c-8e76-9bacb6401d16/download/Traffic%20Collisions%20-%202952.csv")
 
 #### Save data ####
 write_csv(data, "data/01-raw_data/raw_data.csv") 
