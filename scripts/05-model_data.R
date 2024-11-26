@@ -13,7 +13,7 @@ library(arrow)
 
 
 #### Read data ####
-analysis_data <- read_parquet("data/02-analysis_data/analysis_data.csv")
+analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 ### Model data ####
 
@@ -25,9 +25,7 @@ analysis_data$police_division <- factor(analysis_data$police_division)
 set.seed(420)
 
 # get the reduced dataset of only 1000 randomly selected data entries
-motor_fatality_reduced_data <- 
-  analysis_data |> 
-  slice_sample(n = 1000)
+motor_fatality_reduced_data <- slice_sample(analysis_data, n = 2000)
 
 motor_fatality_prediction_model <-
   stan_glm(
@@ -40,7 +38,8 @@ motor_fatality_prediction_model <-
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = 
       normal(location = 0, scale = 2.5, autoscale = TRUE),
-    seed = 420
+    seed = 420,
+    init = "0"
   )
 
 
@@ -51,4 +50,8 @@ saveRDS(
   file = "models/motor_fatality_prediction_model.rds"
 )
 
+
+#### Posterior Model Checks ####
+posterior_predict(motor_fatality_prediction_model)
+pp_check(motor_fatality_prediction_model)
 
