@@ -10,6 +10,7 @@
 library(tidyverse)
 library(rstanarm)
 library(arrow)
+library(bayestestR)
 
 
 #### Read data ####
@@ -21,7 +22,6 @@ analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 analysis_data$month <- factor(analysis_data$month)
 analysis_data$police_division <- factor(analysis_data$police_division)
 
-# Model 1 for n = 1000
 set.seed(420)
 
 # get the reduced dataset of only 1000 randomly selected data entries
@@ -29,8 +29,8 @@ motor_fatality_reduced_data <- slice_sample(analysis_data, n = 2000)
 
 motor_fatality_prediction_model <-
   stan_glm(
-    fatalities ~ hour + injury_collision + date_of_week + month + 
-      police_division + fail_to_remain_collision + 
+    fatalities ~ hour + date_of_week + month + 
+      police_division + 
       property_damage_collision + automobile + motorcycle + passenger + 
       bicycle + pedestrian,
     data = motor_fatality_reduced_data,
@@ -39,6 +39,8 @@ motor_fatality_prediction_model <-
     prior_intercept = 
       normal(location = 0, scale = 2.5, autoscale = TRUE),
     seed = 420,
+    iter = 4000,
+    warmup = 2000,
     init = "0"
   )
 
@@ -54,4 +56,7 @@ saveRDS(
 #### Posterior Model Checks ####
 posterior_predict(motor_fatality_prediction_model)
 pp_check(motor_fatality_prediction_model)
+
+posterior_summary <- describe_posterior(motor_fatality_prediction_model)
+print(posterior_summary)
 
