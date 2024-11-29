@@ -28,6 +28,7 @@ motor_fatality_reduced_data <- slice_sample(analysis_data, n = 2000)
 
 set.seed(420)
 
+# Base Model
 motor_fatality_base_model<-
   stan_glm(
     fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
@@ -41,6 +42,8 @@ motor_fatality_base_model<-
     iter = 2000,
     init = "0"
   )
+
+# Extension Model with Interaction and Fixed Effects
 
 motor_fatality_prediction_model <-
   stan_glm(
@@ -57,7 +60,7 @@ motor_fatality_prediction_model <-
   )
 
 
-#### Save model ####
+#### Save models ####
 summary(motor_fatality_base_model)
 summary(motor_fatality_prediction_model)
 
@@ -72,12 +75,15 @@ saveRDS(
 )
 
 #### Posterior Model Checks ####
+
+# Base Model Checks
 posterior_predict(motor_fatality_base_model)
 pp_check(motor_fatality_base_model)
 
 base_posterior_summary <- describe_posterior(motor_fatality_base_model)
 print(base_posterior_summary)
 
+# Extension Model Checks
 posterior_predict(motor_fatality_prediction_model)
 pp_check(motor_fatality_prediction_model)
 
