@@ -12,8 +12,9 @@
 library(tidyverse)
 library(testthat)
 library(arrow)
+library(here)
 
-test_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
+test_data <- read_parquet(file = here("data/02-analysis_data/analysis_data.parquet"))
 
 
 #### Test data ####
@@ -21,21 +22,21 @@ test_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 # Check column class 
 class(test_data$month) == "character"
 class(test_data$date_of_week) == "character"
-class(test_data$year) == "number"
-class(test_data$hour) == "number"
+class(test_data$year) == "numeric"
+class(test_data$hour) == "numeric"
 class(test_data$police_division) == "character"
 class(test_data$fatalities) == "number"
-class(test_data$fail_to_remain_collision) == "number"
-class(test_data$property_damage_collision) == "number"
-class(test_data$automobile) == "number"
-class(test_data$motorcycle) == "number"
-class(test_data$passenger) == "number"
-class(test_data$bicycle) == "number"
-class(test_data$pedestrian) == "number"
+class(test_data$fail_to_remain_collision) == "numeric"
+class(test_data$property_damage_collision) == "numeric"
+class(test_data$automobile) == "numeric"
+class(test_data$motorcycle) == "numeric"
+class(test_data$passenger) == "numeric"
+class(test_data$bicycle) == "numeric"
+class(test_data$pedestrian) == "numeric"
 
 # Test that the Dataset has 15 columns
 test_that("dataset has 15 columns", {
-  expect_equal(ncol(test_data), 16)
+  expect_equal(ncol(test_data), 15)
 })
 
 # Test that 'month' column contains valid months 
@@ -58,7 +59,7 @@ test_that("'month' contains valid month names or NaN", {
 })
 
 # Test that 'hours' column contains valid hours
-valid_hours <- 1:24
+valid_hours <- 0:24
 
 test_that("'hour' contains valid hours (1-24)", {
   expect_true(all(is.na(test_data$hour) | test_data$hour %in% valid_hours))

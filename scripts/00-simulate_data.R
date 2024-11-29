@@ -9,6 +9,7 @@
 
 #### Workspace setup ####
 library(tidyverse)
+library(arrow)
 set.seed(690)
 
 #### Simulate data ####
@@ -35,44 +36,46 @@ simulated_data <- tibble(
   # Randomly Assign Months
   month = sample(list_of_months, size = 1000, replace = TRUE),
   
-  
   # Randomly Assign Day of the Week
   date_of_week = sample(list_of_dates, size = 1000, replace = TRUE),
   
   # Randomly Assign Years
   year = sample(2014:2024, size = 1000, replace = TRUE), 
   
+  # Randomly Assign Hours
+  hour = sample(0:24, size = 1000, replace = TRUE),
+  
   # Randomly Assign Police Divisions
-  date_of_week = sample(list_of_divisions, size = 1000, replace = TRUE),
+  police_division = sample(list_of_divisions, size = 1000, replace = TRUE),
   
   # Randomly Fatalities Variable
-  fatalities <- sample(c(0, 1), size = 1000, replace = TRUE),
+  fatalities = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly Injury Collision Variable
-  injury_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  injury_collision = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly fail_to_remain_collision Variable
-  fail_to_remain_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  fail_to_remain_collision = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly property damage collision Variable
-  property_damage_collision <- sample(c(0, 1), size = 1000, replace = TRUE),
+  property_damage_collision = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly automobile Variable
-  automobile <- sample(c(0, 1), size = 1000, replace = TRUE),
+  automobile = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly motorcycle Variable
-  motorcycle <- sample(c(0, 1), size = 1000, replace = TRUE),
+  motorcycle = sample(0:1, size = 1000, replace = TRUE),
   
   # Randomly passenger Variable
-  passenger <- sample(c(0, 1), size = 1000, replace = TRUE),
+  passenger = sample(0:1, size = 1000, replace = TRUE),
 
   # Randomly bicycle Variable
-  bicycle <- sample(c(0, 1), size = 1000, replace = TRUE),  
+  bicycle = sample(0:1, size = 1000, replace = TRUE),  
   
   # Randomly pedestrian Variable
-  pedestrian <- sample(c(0, 1), size = 1000, replace = TRUE)
+  pedestrian = sample(0:1, size = 1000, replace = TRUE)
   
 )
 
 #### Save data ####
-write_csv(simulated_data, "data/00-simulated_data/simulated_data.csv")
+write_parquet(simulated_data, "data/00-simulated_data/simulated_data.parquet") 

@@ -42,49 +42,54 @@ cleaned_data <-
          "pedestrian" = "PEDESTRIAN", 
   ) |>
   
-  # Update Fatalities and Clean Other Variables
-  mutate(fatalities = ifelse(is.na(fatalities), 0, fatalities)) |>
+  # Update Fatalities to be Binary Variable 
+  mutate(fatalities = ifelse(is.na(fatalities), 0, 1)) |>
   
   mutate(
     injury_collision = case_when(
       injury_collision == "YES" ~ 1,
       injury_collision == "NO" ~ 0,
-      injury_collision == "N/R" ~ NA_real_
+      injury_collision == "None" ~ 0
     ),
     fail_to_remain_collision = case_when(
       fail_to_remain_collision == "YES" ~ 1,
       fail_to_remain_collision == "NO" ~ 0,
-      fail_to_remain_collision == "N/R" ~ NA_real_
+      fail_to_remain_collision == "None" ~ 0
     ),
     property_damage_collision = case_when(
       property_damage_collision == "YES" ~ 1,
       property_damage_collision == "NO" ~ 0,
-      property_damage_collision == "N/R" ~ NA_real_
+      property_damage_collision == "None" ~ 0
     ),
     automobile = case_when(
       automobile == "YES" ~ 1,
       automobile == "NO" ~ 0,
-      automobile == "N/R" ~ NA_real_
+      automobile == "N/R" ~ NA_real_,
+      automobile == "None" ~ 0
     ),
     motorcycle = case_when(
       motorcycle == "YES" ~ 1,
       motorcycle == "NO" ~ 0,
-      motorcycle == "N/R" ~ NA_real_
+      motorcycle == "N/R" ~ NA_real_,
+      motorcycle == "None" ~ 0
     ),
     passenger = case_when(
       passenger == "YES" ~ 1,
       passenger == "NO" ~ 0,
-      passenger == "N/R" ~ NA_real_
+      passenger == "N/R" ~ NA_real_,
+      passenger == "None" ~ 0
     ),
     pedestrian = case_when(
       pedestrian == "YES" ~ 1,
       pedestrian == "NO" ~ 0,
-      pedestrian == "N/R" ~ NA_real_
+      pedestrian == "N/R" ~ NA_real_,
+      pedestrian == "None" ~ 0
     ), 
     bicycle = case_when(
       bicycle == "YES" ~ 1,
       bicycle == "NO" ~ 0,
-      bicycle == "N/R" ~ NA_real_
+      bicycle == "N/R" ~ NA_real_,
+      bicycle == "None" ~ 0
     )
   ) |>
   
