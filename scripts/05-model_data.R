@@ -34,7 +34,7 @@ motor_fatality_base_model<-
     fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
       motorcycle + passenger + bicycle + pedestrian,
     data = motor_fatality_reduced_data,
-    family = binomial(link = "probit"),
+    family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = 
       normal(location = 0, scale = 2.5, autoscale = TRUE),
@@ -50,7 +50,7 @@ motor_fatality_prediction_model <-
     fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
       motorcycle + passenger + bicycle + pedestrian + police_division + year + hour*automobile + hour*pedestrian + hour* motorcycle + hour*passenger + hour*bicycle,
     data = motor_fatality_reduced_data,
-    family = binomial(link = "probit"),
+    family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = 
       normal(location = 0, scale = 2.5, autoscale = TRUE),
