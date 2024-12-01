@@ -9,6 +9,7 @@ date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
 format: pdf
 number-sections: true
+toc: true
 bibliography: references.bib
 ---
 
@@ -18,33 +19,58 @@ bibliography: references.bib
 #| message: false
 
 library(tidyverse)
+library(here)
+library(arrow)
+library(ggplot2)
+library(modelsummary)
+library(rstanarm)
+library(knitr)
+library(kableExtra)
+
+
+# Read in Analysis Data
+analysis_data <- read_parquet(file = here("data/02-analysis_data/analysis_data.parquet"), show_col_types = FALSE)
+
+# Read in Model Data 
+prediction_model <- readRDS(file = here(
+  "models/motor_fatality_prediction_model.rds"))
 ```
 
 
 # Introduction
 
-Overview paragraph
+Automobile fatalities are a leading cause of death worldwide, posing a public health and safety concern for urban cities. For example, in 2024, thirty people have died on Toronto's roadways so far, which is a 20% increase from last year (insert citation, CBC). However, new headlines, such as CBCs, highlight that Motor Vehicle Collisions (MVC) tend to either be generalized as a summary statistic or typically fatal events are over analyzed to the extent that environmental factors surrounding the crash are ignored (CLARIFY). Moreover, general environmental factors such as the time of the crash or if a bicycle was involved in the accident are important to understand what increases the likelihood of a fatality occurring in an MVC. The use of statistical modeling on increasingly available vehicle collision data presents an opportunity to develop a nuanced understanding of what factors increases the likelihood for a fatality to occur in an accident. This paper uses the Toronto Police Service's  Annual Statistical Report from Open Data Toronto to analyze what factors are most responsible in predicting if a fatality occurs in a car crash.
 
-Estimand paragraph
+The estimand of interest is the log-adjusted probability of a fatality occuring in a car crash. Specifically, we aim to quanitfy how specific environmental factors increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties (EDIT).
 
-Results paragraph
+what was found (FINISH PARAGRAPH)
 
-Why it matters paragraph
+The paper is not only important from a public health perspective, but the paper also has policy development implications. Road safety and reducing fatal MVCs are a critical agenda item of any municipal government. The paper informs what factors increase the likelihood of death in an MVC, which informs policymakers' focus for relevant policy design. 
 
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....
-
-
-
-
-
+The remainder of this paper is structured as follows: @sec-data describes the dataset and methodology and @sec-model exhibits the use of inferential models. @Sec-results presents the results of the analysis, detailing the observed relationships between likelihood of death and various circumstantial factors. @sec-discussion discusses the broader implications and limitations of our findings.@sec-appendix presents a detailed idealized methodology to improve data collection, and additional model summary and diagnostic information.  
 
 # Data {#sec-data}
 
 ## Overview
 
-We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+This dataset, "Police Annual Statistical Report - Traffic Collisions", was published and refreshed on October 21st, 2024, by the Toronto Police Service [insert citation]. The Toronto Police Service publishes various datasets on public safety and crime to inform the public about safety issues [@annual_statistics_report]. Data on traffic collisions is included in the Toronto Police Service's Annual Statistical Report, which also covers reported crimes, search of persons, firearms, and the Police Service's budget [@annual_statistics_report]. The data is collected using historical Motor Vehicle Collisions and classifies them into the following categories: 
+* Property Damage (PD) Collisions
+* Fail to Remain (FTR) Collisions, or commonly known as hit-and-run accidents
+* Injury Collisions
+* Fatalities 
 
-Overview text
+Following the Municipal Freedom of Information and Protection of Privacy Act, the Toronto Police Service ensures to protect the privacy of individuals involved in the reported crimes when publishing the data. The dataset is updated annually, is open data, and can be used if an attribution statement @sec-appendix-attribution and is properly cited [@tphlicense]. 
+
+There is an alternative dataset from the Toronto Police Service called "Motor Vehicle Collisions involving Killed or Seriously Injured Persons" (CITE). Unlike the alternative dataset, this paper's dataset focuses on all collisions, instead of only focusing on ones where someone was either killed or seriously injured. While the alternative dataset has more explanatory variables simply because more data is collected when someone dies or is seriously injured, this paper's aims to generalize if a fatality is more likely to occur based on the general circumstances surrounding a crash, such as the time of day or if property damage occurred. Thus, we ended up not going with the alternative dataset for this paper, but there are variables in the alternative dataset that may motivate future research on this subject. (EDIT TO MAKE MORE CLEAR)
+
+The paper uses the R programming language [@citeR] to analyze the dataset. The tidyverse package was used to simulate the dataset. Also, the tidyverse [@citetidyverse], arrow [CITE] and opendatatoronto [@citeopendatatoronto] packages were used to download the Victims of Crime dataset. Then, the tidyverse [@citetidyverse] package was used to clean the raw dataset and generate tests. The testthat package [CITE THIS] was used to create tests for our cleaned dataset. Rstanarm [CITE], Arrow [CITE], and bayestestR [CITE] were used to create and test the model. Finally, ggplot2 [@citeggplot2], tidyverse [@citetidyverse], knitr [@citeknitr] and scales [@citescales] packages were used to create the tables and graphs to display the results. [edit this paragraph]
+
+## Data Cleaning (MAYBE INCLUDE IN OTHER PLACE? )
+
+Explain how we cleaned fatalities to a variable rather than whatever 
+
+
+The variables of interest in the paper are CrimeType (named SUBTYPE in the original dataset), which categories the type of crime into the four areas of Assault, Sexual Violation, Robbery and Other; AssaultType (named ASSAULT_SUBTYPE in the original dataset), which specifies assault on peace officers into the subtypes noted in @sec-introduction; Sex (named SEX in the original dataset) - which is broken down into Male, Female and Unknown, where Unknown means the victim’s sex is not known by the Toronto Police Service; and Count (named COUNT in the original dataset), which counts the number of identified victims who share the same demographic characteristics previously. Each entry in the dataset does not represent a unique person but notes the number of people who share the same characteristics, such as Sex and CrimeType. Other characteristics such as age group, reported year and age cohort were not variables of interest for the study and were removed from the cleaned dataset. Using knitr [@citeknitr], the first 10 lines of the cleaned dataset is shown in @sec-appendix-sample under @tbl-head. In addition, summaries of the Sex and Year variables are displayed in @sec-appendix-summary_statistics.  
 
 ## Measurement
 	
@@ -54,22 +80,11 @@ Some paragraphs about how we go from a phenomena in the world to an entry in the
 
 Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
 
-
-
-Some of our data is of penguins (@fig-bills), from @palmerpenguins.
-
 ```{r}
 #| label: fig-bills
 #| fig-cap: Bills of penguins
 #| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
 ```
 
 Talk more about it.
@@ -83,29 +98,38 @@ And also planes (@fig-planes). (You can change the height and width, but don't w
 #| warning: false
 #| message: false
 
-analysis_data <- read_csv(here::here("data/02-analysis_data/analysis_data.csv"))
 
-analysis_data |> 
-  ggplot(aes(x = width, y = length)) +
-  geom_point(alpha = 0.8) +
-  theme_minimal() +
-  labs(x = "Wing width (mm)",
-       y = "Wing length (mm)")
 ```
 
 Talk way more about it. 
 
 ## Predictor variables
 
+### Hour
+
+
 Add graphs, tables and text.
 
 Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
 
+### Type of Crash
 
+### Automobile 
 
+### Motorcycle
 
+### Passenger
 
+### Pedestrian
 
+### Police Division
+Fixed effects
+
+### Year 
+Fixed effects
+
+### Interaction Terms
+Why you have interaction between hour and all these things
 
 
 # Model
@@ -149,8 +173,6 @@ Our results are summarized in @tbl-modelresults.
 
 library(rstanarm)
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
@@ -160,13 +182,13 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
+#modelsummary::modelsummary(
+ # list(
+  #  "First model" = first_model
+  #),
+  #statistic = "mad",
+  #fmt = 2
+#)
 ```
 
 
@@ -201,9 +223,9 @@ Weaknesses and next steps should also be included.
 
 ## Posterior predictive check
 
-In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+In we implement a posterior predictive check. This shows...
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In we compare the posterior with the prior. This shows... 
 
 ```{r}
 #| eval: true
@@ -215,22 +237,22 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
+#pp_check(first_model) +
+  #theme_classic() +
+ # theme(legend.position = "bottom")
 
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
+#posterior_vs_prior(first_model) +
+ # theme_minimal() +
+  #scale_color_brewer(palette = "Set1") +
+ # theme(legend.position = "bottom") +
+ # coord_flip()
 ```
 
 ## Diagnostics
 
-@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+is a trace plot. It shows... This suggests...
 
-@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+is a Rhat plot. It shows... This suggests...
 
 ```{r}
 #| echo: false
@@ -242,9 +264,9 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
+#plot(first_model, "trace")
 
-plot(first_model, "rhat")
+#plot(first_model, "rhat")
 ```
 
 
