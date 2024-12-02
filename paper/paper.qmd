@@ -30,6 +30,7 @@ library(kableExtra)
 
 # Read in Analysis Data
 analysis_data <- read_parquet(file = here("data/02-analysis_data/analysis_data.parquet"), show_col_types = FALSE)
+raw_data <- read_parquet(file = here("data/01-raw_data/raw_data.parquet"), show_col_types = FALSE)
 
 # Read in Model Data 
 prediction_model <- readRDS(file = here(
@@ -39,9 +40,9 @@ prediction_model <- readRDS(file = here(
 
 # Introduction
 
-Automobile fatalities are a leading cause of death worldwide, posing a public health and safety concern for urban cities. For example, in 2024, thirty people have died on Toronto's roadways so far, which is a 20% increase from last year (insert citation, CBC). However, new headlines, such as CBCs, highlight that Motor Vehicle Collisions (MVC) tend to either be generalized as a summary statistic or typically fatal events are over analyzed to the extent that environmental factors surrounding the crash are ignored (CLARIFY). Moreover, general environmental factors such as the time of the crash or if a bicycle was involved in the accident are important to understand what increases the likelihood of a fatality occurring in an MVC. The use of statistical modeling on increasingly available vehicle collision data presents an opportunity to develop a nuanced understanding of what factors increases the likelihood for a fatality to occur in an accident. This paper uses the Toronto Police Service's  Annual Statistical Report from Open Data Toronto to analyze what factors are most responsible in predicting if a fatality occurs in a car crash.
+Automobile fatalities are a leading cause of death worldwide, posing a public health and safety concern for urban cities. For example, in 2024, thirty people have died on Toronto's roadways so far, which is a 20% increase from last year (insert citation, CBC). However, new headlines, such as CBCs, highlight that Motor Vehicle Collisions (MVC) tend to either be generalized as a summary statistic or typically fatal events are over analyzed to the extent that environmental factors surrounding the crash are ignored (CLARIFY). Moreover, general environmental factors such as the time of the crash or if a bicycle was involved in the accident are important to understand what increases the likelihood of a fatality occurring in an MVC. The use of statistical modeling on increasingly available vehicle collision data presents an opportunity to develop a nuanced understanding of what factors increases the likelihood for a fatality to occur in an accident. This paper uses the Toronto Police Service's  Annual Statistical Report from Open Data Toronto to analyze what factors are most responsible in predicting if a fatality occurs in a MVC.
 
-The estimand of interest is the log-adjusted probability of a fatality occuring in a car crash. Specifically, we aim to quanitfy how specific environmental factors increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties (EDIT).
+The estimand of interest is the log-adjusted probability of a fatality occuring in a MVC. Specifically, we aim to quanitfy how specific environmental factors increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties (EDIT).
 
 what was found (FINISH PARAGRAPH)
 
@@ -59,80 +60,518 @@ This dataset, "Police Annual Statistical Report - Traffic Collisions", was publi
 * Injury Collisions
 * Fatalities 
 
-Following the Municipal Freedom of Information and Protection of Privacy Act, the Toronto Police Service ensures to protect the privacy of individuals involved in the reported crimes when publishing the data. The dataset is updated annually, is open data, and can be used if an attribution statement @sec-appendix-attribution and is properly cited [@tphlicense]. 
+Following the Municipal Freedom of Information and Protection of Privacy Act, the Toronto Police Service ensures to protect the privacy of individuals involved in the reported crimes when publishing the data. The dataset is updated annually, is open data, and can be used if an attribution statement @sec-appendix-attribution and is properly cited [@tphlicense]. Each entry in the dataset represents a singular vehicular accident and records all MVCs from 2015.  
 
 There is an alternative dataset from the Toronto Police Service called "Motor Vehicle Collisions involving Killed or Seriously Injured Persons" (CITE). Unlike the alternative dataset, this paper's dataset focuses on all collisions, instead of only focusing on ones where someone was either killed or seriously injured. While the alternative dataset has more explanatory variables simply because more data is collected when someone dies or is seriously injured, this paper's aims to generalize if a fatality is more likely to occur based on the general circumstances surrounding a crash, such as the time of day or if property damage occurred. Thus, we ended up not going with the alternative dataset for this paper, but there are variables in the alternative dataset that may motivate future research on this subject. (EDIT TO MAKE MORE CLEAR)
 
 The paper uses the R programming language [@citeR] to analyze the dataset. The tidyverse package was used to simulate the dataset. Also, the tidyverse [@citetidyverse], arrow [CITE] and opendatatoronto [@citeopendatatoronto] packages were used to download the Victims of Crime dataset. Then, the tidyverse [@citetidyverse] package was used to clean the raw dataset and generate tests. The testthat package [CITE THIS] was used to create tests for our cleaned dataset. Rstanarm [CITE], Arrow [CITE], and bayestestR [CITE] were used to create and test the model. Finally, ggplot2 [@citeggplot2], tidyverse [@citetidyverse], knitr [@citeknitr] and scales [@citescales] packages were used to create the tables and graphs to display the results. [edit this paragraph]
 
-## Data Cleaning (MAYBE INCLUDE IN OTHER PLACE? )
-
-Explain how we cleaned fatalities to a variable rather than whatever 
-
-
-The variables of interest in the paper are CrimeType (named SUBTYPE in the original dataset), which categories the type of crime into the four areas of Assault, Sexual Violation, Robbery and Other; AssaultType (named ASSAULT_SUBTYPE in the original dataset), which specifies assault on peace officers into the subtypes noted in @sec-introduction; Sex (named SEX in the original dataset) - which is broken down into Male, Female and Unknown, where Unknown means the victim’s sex is not known by the Toronto Police Service; and Count (named COUNT in the original dataset), which counts the number of identified victims who share the same demographic characteristics previously. Each entry in the dataset does not represent a unique person but notes the number of people who share the same characteristics, such as Sex and CrimeType. Other characteristics such as age group, reported year and age cohort were not variables of interest for the study and were removed from the cleaned dataset. Using knitr [@citeknitr], the first 10 lines of the cleaned dataset is shown in @sec-appendix-sample under @tbl-head. In addition, summaries of the Sex and Year variables are displayed in @sec-appendix-summary_statistics.  
-
 ## Measurement
-	
-Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
+
+Transforming a real-life Motor Vehicle Collision to an entry in the dataset is a well-documented process by the Toronto Police Service. For insurance purposes, the Toronto Police Service requires drivers to fill out the Motor Vehicle Collision Report for any collisions that occur in Toronto (CITE). Drivers required to fill out a motor vehicle collision report if the combined damage is more than $2000, if someone is injured, if a criminal act such as a DUI occurs, or if a pedestrian is involved in the accident (CITE). These reports are retained for six years by the Toronto Police Service, with the exception of collisions resulting in a fatality, which are retained indefinitely. The form ensures documentation of collision characteristics, location, road condition, and the extent of damages, systematically recording the characteristics of each crash for further criminal investigation and data analysis.
+
+For every collision, basic facts such as the location, time, and date of the collision is recorded through the Motor Vehicle Collision Report. Majority if not all the factors recorded in the dataset are all objective measurements regarding the specific details such as if a motorcycle was involved in the collision or if the collision resulted in property damage. All of these details are recorded in the Motor Vehicle Collision Report for all vehicular collisions and are entered into the dataset. However, while the Motor Vehicle Collision Report logs characteristics such as environmental conditions, alcohol involvement, or fatigue, the data set does not include them due to inconsistent data measurement techniques. Moreover, personal details such as the driver's age are not included to protect the driver's privacy.  
 
 ## Outcome variables
 
-Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
+The main outcome variable records the number of fatalities for each MVC. According to the dataset, a fatal collision occurs when an individual's injuries from a collision results in a fatality within 30 days. Fatal collisions excludes occurences on private property, ones related to suddend eath prior to collision, such as suicide, and where the individuals has died more than 30 days after the collision. However, because we are more interested in predicting the probability that a fatality occurs than the number of fatalities, we transformed the variable that distinguishes collisions between if the collision resulted in any fatalities and those without fatalities. In the raw dataset, if there were no fatalities, the entry was recorded as NA, but if there were fatalities, then the number of fatalities were recorded. However, we transformed the dataset that all if a fatality occurred then fatalities indicates `1` and if there were no fatalities then the fatalities column records a '0'. The distribution of the raw dataset is shown in @fig-fatalities-raw. 
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+#| label: fig-fatalities-raw
+#| fig-cap: Distribution of Fatalities in the Raw Dataset  
 #| echo: false
-
-```
-
-Talk more about it.
-
-And also planes (@fig-planes). (You can change the height and width, but don't worry about doing that until you have finished every other aspect of the paper - Quarto will try to make it look nice and the defaults usually work well once you have enough text.)
-
-```{r}
-#| label: fig-planes
-#| fig-cap: Relationship between wing length and width
-#| echo: false
-#| warning: false
 #| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
 
+# Plot distribution of Fatalies in the Raw Dataset 
+ggplot(raw_data %>% mutate(FATALITIES = replace_na(FATALITIES, 0)), 
+       aes(x = FATALITIES)) +
+  geom_bar(fill = "orange", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Fatalities",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+However, after the transformation, the outcome variable now takes on binary values and the distribution and summary statistics are shown below in @fig-fatalites-cleaned and @tbl-fatalites: 
+
+```{r}
+#| label: fig-fatalities-cleaned
+#| fig-cap: Distribution of Fatalities in the Cleaned Dataset   
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Fatalities
+ggplot(analysis_data, aes(x = fatalities)) +
+  geom_bar(fill = "green", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Fatalities",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
 
-Talk way more about it. 
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-fatalities
+#| tbl-cap: Number of unique high-quality polling organizations
+#| tbl-align: center
+#| tbl-width: 82%
 
+
+# Calculate summary statistics for the 'fatalities' variable
+summary_stats <- analysis_data %>%
+  count(fatalities, name = "Fatalities")
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+
+```
 ## Predictor variables
 
 ### Hour
 
+The hour variable indicates the time at which the accident occurred using the 24 hour clock, such that a value of 0 represents 12 AM and 23 represents 11 PM. The distribution and summary statistics of the hour variable can be found in @fig-hour and @tbl-hour, respectively. @fig-hour highlights that the majority of accidents happen from 9 AM to 7 PM, which is reasonable as these times include rush hour, where the greatest number of people are driving at the same time for work or school. However, @tbl-hour also shows that a greater number of fatalities occur at night, which we hypothesize is due to lack of vision or reckless driving. 
 
-Add graphs, tables and text.
+```{r}
+#| label: fig-hour
+#| fig-cap: Distribution of the Hour Variable  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
 
-Use sub-sub-headings for each outcome variable and feel free to combine a few into one if they go together naturally.
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = hour)) +
+  geom_bar(fill = "yellow", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Hour",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-hour
+#| tbl-cap: The Summary of the Hour 
+#| tbl-align: center
+#| tbl-width: 82%
+
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(hour) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+
+```
 
 ### Type of Crash
 
+Beyond identifying fatalities, the Motor Vehicle Collision Reports notes if the crash was one of three types: an injury collision, a fail to remain collision, and a property damage collision. A personal injury collision occur when an individual involved in a MVC suffers personal injuries. Fail to remain collisions are recorded when an individual involved in a collision fail to stop and provide their information at the scene of a collision. Property damage collisions occur when an individual has been damaged in a collision or the value of damages is less than $\2000 for all parties. The distribution and summary statistics of these three variables can be found in @fig-crashtype and @tbl-crashtype. The results in @tbl-crashtype show that crashes that classify under these three categories usually do not lead to death. 
+
+```{r}
+#| label: fig-crashtype
+#| fig-cap: Breakdown of Each Collision Type by Fatalities  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Reshape data to long format for easier plotting
+analysis_data_long <- analysis_data %>%
+  select(fatalities, injury_collision, fail_to_remain_collision, property_damage_collision) %>%
+  gather(key = "collision_type", value = "collision", 
+         injury_collision, fail_to_remain_collision, property_damage_collision)
+
+# Plot the data
+ggplot(analysis_data_long, aes(x = collision_type, fill = factor(fatalities))) +
+  geom_bar(position = "dodge", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Collision Type", y = "Count") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("0" = "green", "1" = "red"), 
+                    labels = c("0" = "No Fatalities", "1" = "Fatality Occurred")) +
+  scale_x_discrete(labels = c("injury_collision" = "Injury Collision", 
+                              "fail_to_remain_collision" = "Fail to Remain Collision", 
+                              "property_damage_collision" = "Property Damage Collision"))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-crashtype
+#| tbl-cap: Breakdown of MVCs Into the Different Categories, Broken Down by Fatalities
+#| tbl-align: center
+#| tbl-width: 82%
+
+# Reshape data to long format for easier plotting
+
+
+# Calculate summary statistics for the 'Collision Type' variable
+summary_stats <- analysis_data %>%
+  mutate(
+    collision_type = case_when(
+      injury_collision == 1 ~ "Injury Collision",
+      fail_to_remain_collision == 1 ~ "Fail to Remain Collision",
+      property_damage_collision == 1 ~ "Property Damage Collision",
+      TRUE ~ "Not Applicable"
+    )
+  ) %>%
+  group_by(collision_type) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  ) %>%
+  # Add a row for total at the bottom
+  bind_rows(
+    summarize(
+      analysis_data,
+      collision_type = "Total",
+      "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+      "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+      Total = n()
+    )
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+
+```
+
 ### Automobile 
+
+The automobile variable is a indicator variable to show if a collision involved a person in an automobile. In the raw dataset, the variable was labeled as Yes, No, None or N/R (Not Recorded). We labelled Not Recorded as NA because there is no reliable way of characterizing the variable. Further, we labeled No and None as 0 and Yes as 1, where 1 represents that an automobile was involved and 0 represents that an automobile was not, such as a crash between two motorcycles. We also employed this method for the following variables: motorcycle, passenger, and pedestrian. 
+
+@fig-automobile and @tbl-automobile shows that 588 of 608 deaths happened when an automobile was involved, which is not surprising given majority of vehicles on the road are cars. 
+
+
+
+```{r}
+#| label: fig-automobile
+#| fig-cap: Distribution of the Automobile Variable  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = automobile)) +
+  geom_bar(fill = "purple", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Automobile",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-automobile
+#| tbl-cap: Summary of the Automobile Variable 
+#| tbl-align: center
+#| tbl-width: 82%
+
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(automobile) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 
 ### Motorcycle
 
+The motorcycle variable is another indicator variable to show that whether the collision involved a person in a motorcycle. 1 represents that a motorcycle was involved and 0 represents that a motorcycle was not involved in the crash. @fig-motorcycle and @tbl-motorcycle shows the distribution and summary of the motorcycle variable, respectively. @tbl-motorcycle shows that only 75 vehicular deaths involved a motorcycle. 
+
+```{r}
+#| label: fig-automobile
+#| fig-cap: Distribution of the Automobile Variable  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = motorcycle)) +
+  geom_bar(fill = "orange", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Motorcycle",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-motorcycle
+#| tbl-cap: Summary of the Automobile Variable 
+#| tbl-align: center
+#| tbl-width: 82%
+
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(motorcycle) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 ### Passenger
 
+The passenger variable is an indicator variable that highlights if the collision involved a passenger in a motor vehicle. 1 represents there was a passenger and 0 shows that there was not a passenger involved. @fig-passenger and @tbl-passenger shows the distribution and summary of the passenger variable, respectively. @tbl-passenger shows that 177 vehicular deaths involved a passenger. 
+
+```{r}
+#| label: fig-passenger
+#| fig-cap: Distribution of the Passenger Variable  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = passenger)) +
+  geom_bar(fill = "blue", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Passenger",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-passenger
+#| tbl-cap: Summary of the Passenger Variable 
+#| tbl-align: center
+#| tbl-width: 82%
+
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(passenger) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 ### Pedestrian
 
+The pedestrian variable is an indicator variable that highlights if the collision involved a pedestrian. 1 represents a pedestrian was involved and 0 shows that there was no pedestrian. @fig-pedestrian and @tbl-pedestrian shows the distribution and summary of the pedestrian variable, respectively. @tbl-pedestrian highlights that of 606 deaths, 342 deaths involved pedestrians, which is a significant percentage. 
+
+```{r}
+#| label: fig-pedestrian
+#| fig-cap: Distribution of the Pedestrian Variable  
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = pedestrian)) +
+  geom_bar(fill = "red", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Pedestrian",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-pedestrian
+#| tbl-cap: Summary of the Pedestrian Variable 
+#| tbl-align: center
+#| tbl-width: 82%
+
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(pedestrian) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 ### Police Division
-Fixed effects
+
+The Police Division variable represents the police division where the collision occured. The paper plans to include the police division variable as a general proxy for location and account if certain areas are more susceptible to crashes than others. @fig-division and @tbl-division shows the distirbution and breakdown of MVCs among police departments.Based on the @tbl-division, there seems to be no discernible pattern but D41 and D42 have the highest number of vehicular fatalities at 63 and 66, respectively. 
+
+```{r}
+#| label: fig-division
+#| fig-cap: Distribution of the Police Division
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+# Plot distribution of Hour Variable
+ggplot(analysis_data, aes(x = police_division)) +
+  geom_bar(fill = "magenta", alpha = 0.7, color = "black") +
+  theme_minimal() +
+  labs(x = "Police Division",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-division
+#| tbl-cap: Summary of the Police Divison Variable 
+#| tbl-align: center
+#| tbl-width: 82%
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(police_division) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 
 ### Year 
-Fixed effects
+
+The year variable shows the number of MVCs per year. @fig-year and @tbl-year shows the number of MVCs over time. Looking at @fig-year and @tbl-year there is a noticeable dip in MVCs in 2020 and 2021 due to COVID-19 but MVC levels have not hit their 2019 peaks most likely due to people in Toronto not driving as much as before. However, idea of fewer drivers is a hypothesis and needs further research. 
+
+```{r}
+#| label: fig-year
+#| fig-cap: Number of MVCs per Year
+#| echo: false
+#| message: false
+#| warning: false
+#| fig-width: 5
+#| fig-height: 2.5
+#| fig-align: center
+
+year_count <- analysis_data %>%
+  count(year, name = "count")
+
+# Plot distribution of Year Variable
+ggplot(year_count, aes(x = year, y = count, group = 1)) +
+  geom_line(color = "black", alpha = 0.7) +
+  theme_minimal() +
+  labs(x = "Year",
+       y = "Count") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: tbl-year
+#| tbl-cap: Summary of Number of MVCs by Year
+#| tbl-align: center
+#| tbl-width: 82%
+
+# Calculate summary statistics for the 'hour' variable
+summary_stats <- analysis_data %>%
+  group_by(year) %>%
+  summarize(
+    "No Fatalities" = sum(fatalities == 0, na.rm = TRUE),
+    "Fatality Occurred" = sum(fatalities == 1, na.rm = TRUE),
+    Total = n()
+  )
+
+# Display the summary statistics in a nicely formatted table
+summary_stats %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
 
 ### Interaction Terms
 Why you have interaction between hour and all these things
 
 
 # Model
+
+The study aims to predict the likelihood of fatality in a car crash. The model was implemeneted using the rstatarm package in R, leveraging its framework for Baysian regression modelling. 
 
 The goal of our modelling strategy is twofold. Firstly,...
 
@@ -182,7 +621,7 @@ library(rstanarm)
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-#modelsummary::modelsummary(
+modelsummary::modelsummary(
  # list(
   #  "First model" = first_model
   #),
@@ -190,8 +629,6 @@ library(rstanarm)
   #fmt = 2
 #)
 ```
-
-
 
 
 # Discussion
