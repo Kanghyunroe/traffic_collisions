@@ -36,7 +36,7 @@ set.seed(420)
 motor_fatality_prediction_model <-
   stan_glm(
     fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
-      motorcycle + passenger + bicycle + pedestrian + police_division + year,
+      motorcycle + passenger + bicycle + pedestrian + police_division + year + hour*motorcycle + hour*pedestrian,
     data = motor_fatality_reduced_data,
     family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
