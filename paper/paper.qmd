@@ -585,23 +585,25 @@ $$Y_i =
 
 \begin{align}S_i \sim \text{Bernoulli}(p_i)\end{align}
 
-\begin{equation}
-\text{logit}(p_i) = \beta_{0} 
+\newpage
+
+\begin{align}
+\text{logit}(p_i) &= \beta_{0} 
 + \beta_{1} x_{\text{hour}_{i}} 
 + \beta_{2} x_{\text{InjuryCollision}_{i}} 
 + \beta_{3} x_{\text{FTRCollision}_{i}} 
-+ \beta_{4} x_{\text{PDCollision}_{i}} 
-+ \beta_{5} x_{\text{automobile}_{i}} 
++ \beta_{4} x_{\text{PDCollision}_{i}} \nonumber \\ 
+&\quad + \beta_{5} x_{\text{automobile}_{i}} 
 + \beta_{6} x_{\text{motorcycle}_{i}} 
 + \beta_{7} x_{\text{passenger}_{i}} 
-+ \beta_{8} x_{\text{pedestrian}_{i}} 
-+ \beta_{9} x_{\text{PoliceDivision}_{i}} 
-+ \beta_{10} x_{\text{year}_{im}} 
-+ \beta_{11} x_{\text{hour}_{i}} \cdot x_{\text{motorcycle}_{i}} 
++ \beta_{8} x_{\text{pedestrian}_{i}} \nonumber \\ 
+&\quad + \beta_{9} x_{\text{PoliceDivision}_{i}} 
++ \beta_{10} x_{\text{year}_{im}} \nonumber \\ 
+&\quad + \beta_{11} x_{\text{hour}_{i}} \cdot x_{\text{motorcycle}_{i}} 
 + \beta_{12} x_{\text{hour}_{i}} \cdot x_{\text{pedestrian}_{i}} 
 + \epsilon_{i}
 \label{eq:logit}
-\end{equation}
+\end{align}
 
 In equation \ref{eq:logit}, each $\beta$ represents a coefficient determined through regression analysis. The variables chosen for the model are hour, the different types of collisions, automobile, motorcycle, passenger, pedestrian, year, and police division. Each predictor variable was selected based on its significance in vehicle fatality prediction analysis. Temporal variables such as hour and year are introduced as fixed effects to account for biases across time without introducing unnecessary complexity. Similarly, location introduces biases as some neighborhoods may be more susceptible to vehicle accidents than others, prompting the inclusion of police department as a fixed effect and a proxy for location. Furthermore, depending on the time of day, motorcyclists and pedestrians are more susceptible to fatal vehicle accidents than during the day. Thus, $\beta_{11}$ and $\beta_{12}$ represents the coefficient of an interaction term between motorcycle and pedestrian with the categorical variable hour, respectively, to account for potential variations in risk patterns associated with different times of the day. These interaction terms allow the model to capture the increased vulnerability of motorcyclists and pedestrians during specific hours, such as nighttime or early morning, when visibility and traffic conditions may differ significantly, thereby improving the precision and interpretability of the predictions. In addition, any variables, especially the various interaction terms, will be omitted if they display high multicolinearity or insignificance. Finally, $\epsilon_i$ is the Gaussian-distributed error term, accounting for residual variation in the model.
 
@@ -617,7 +619,7 @@ Another important limitation is the potential for omitted variable bias and unme
 
 # Results
 
-To assess model reliability, we examined several key metrics. Convergence metrics, such as Rhat values, were very close to 1 for all parameters, indicating strong convergence. Additionally, the effective sample size $\text{n_{eff}}$ was high across all parameters, suggesting low autocorrelation and contributing to model stability. See more details of our model diagnostics here: (INSERT REFERENCE)
+To assess model reliability, we examined several key metrics. Convergence metrics, such as Rhat values, were very close to 1 for all parameters, indicating strong convergence. Additionally, the effective sample size $n_{\text{eff}}$ was high across all parameters, suggesting low autocorrelation and contributing to model stability. See more details of our model diagnostics here: (INSERT REFERENCE)
 
 ```{r}
 #| echo: false
