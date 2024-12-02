@@ -328,7 +328,7 @@ summary_stats %>%
 The motorcycle variable is another indicator variable to show that whether the collision involved a person in a motorcycle. 1 represents that a motorcycle was involved and 0 represents that a motorcycle was not involved in the crash. @fig-motorcycle and @tbl-motorcycle shows the distribution and summary of the motorcycle variable, respectively. @tbl-motorcycle shows that only 75 vehicular deaths involved a motorcycle. 
 
 ```{r}
-#| label: fig-automobile
+#| label: fig-motorcycle
 #| fig-cap: Distribution of the Automobile Variable  
 #| echo: false
 #| message: false
@@ -565,35 +565,58 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-### Interaction Terms
+### Relevant Interaction Terms
 Why you have interaction between hour and all these things
 
 
 # Model
 
-The study aims to predict the likelihood of fatality in a car crash. The model was implemeneted using the rstatarm package in R, leveraging its framework for Baysian regression modelling. 
+## Model Set-Up and Justification
 
-The goal of our modelling strategy is twofold. Firstly,...
+For our analysis, we employ a Bayesian Logistic Linear Model to forecast the likelihood of a fatality in a car crash. This approach allows us to capture known variations between years, police divisions, and the characteristics of a crash, such as the involvement of a motorcycle or if someone was injured. 
 
-Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+The first step in the process involved selecting a reliable dataset for model development. We utilized high-quality vehicle collision data gathered by the Toronto Police Service. We first excluded all cases in our predictor variables that had null values. In addition, we transformed fatalities into a binary response variable. Let $Y_i$ represent the fatality outcome for observation $i$, where $Y_i =1$ indicates a fatality occurred and $Y_i=0$ indicates no fatality. The probability of fatality is modeled through a Bernoulli distribution: 
 
-## Model set-up
+$$Y_i = 
+\begin{cases} 
+0 & \text{if no fatality occurred (original classification: N/A)} \\ 
+1 & \text{if any fatality occurred (original classifications: 1, 2, or 3 fatalities)}
+\end{cases}$$
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+\begin{align}S_i \sim \text{Bernoulli}(p_i)\end{align}
 
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
-\end{align}
+\begin{equation}
+\text{logit}(p_i) = \beta_{0} 
++ \sum_{j=1}^{n} \beta_{\text{hour}_j} x_{\text{hour}_{ij}} 
++ \beta_{2} x_{\text{InjuryCollision}_i} 
++ \beta_{3} x_{\text{FTRCollision}_i} 
++ \beta_{4} x_{\text{PDCollision}_i} 
++ \beta_{5} x_{\text{automobile}_i} 
++ \beta_{6} x_{\text{motorcycle}_i} 
++ \beta_{7} x_{\text{passenger}_i} 
++ \beta_{8} x_{\text{pedestrian}_i} 
++ \sum_{z=1}^{a} \beta_{\text{PoliceDivision}_z} x_{\text{PoliceDivision}_{iz}} 
++ \sum_{m=1}^{a} \beta_{\text{year}_m} x_{\text{year}_{im}} 
++ \sum_{j=1}^{n} \beta_{\text{hour}_j \times \text{motorcycle}} x_{\text{hour}_{ij}} \cdot x_{\text{motorcycle}_i} 
++ \sum_{j=1}^{n} \beta_{\text{hour}_j \times \text{pedestrian}} x_{\text{hour}_{ij}} \cdot x_{\text{pedestrian}_i} 
++ \epsilon_{i}
+\label{eq:logit}
+\end{equation}
 
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+In equation \ref{eq:logit}, each $\beta$ represents a coefficient determined through regression analysis. The variables chosen for the model are hour, the different types of collisions, automobile, motorcycle, passenger, pedestrian, year, and police divsion. Each predictor variable was selected based on its significance in vehicle fatality prediction analysis. The different types of collisions 
 
+Hour5 and hour9 motorcycle dropped for zero effects
+fix for location effects
+temporal effects
+interaction terms fix for how different parts of the hour best affect (bicycle not included as had a precise null effect and prevent overfitting) 
 
-### Model justification
+ The identity of the polling organization is important to our model, as each pollster may exhibit unique biases. Including Pollster as a fixed effect allows us to account for these variations without introducing unnecessary complexity. Population Type distinguishes among different groups surveyed (e.g., voters, likely voters) and helps in capturing generalizability. Categorizing polls as either recent or older ensures that more recent polls are better predictors of voting behavior closer to the election. $Y_i$ denotes the predicted popular vote percentage for Kamala Harris in the $i$-th poll. $\epsilon_i$ is the Gaussian-distributed error term, accounting for residual variation in the model.
+
+To enhance the model, Bayesian priors were applied, introducing regularization and incorporating plausible ranges grounded. For the coefficient priors $\beta$, a normal distribution with a mean of 0 and a scale of 2.5 (autoscaled) was chosen to provide flexibility while mitigating overfitting. Similarly, the intercept uses a normal prior with a mean of 0 and a scale of 2.5 to stabilize model estimates. For the error term (sigma), an exponential prior with a rate of 1 was selected to constrain the residuals, aligning with Gaussian assumptions.
+
+The model was implemented in R [@citeR] using the `rstanarm` package, which offers an accessible interface for Bayesian generalized linear models (GLMs), allowing specification of priors and customization of model parameters. Once the logistic regression model for predicting the popular vote is developed, we apply the `predict()` function in R [@citeR] to generate popular vote percentage predictions for Harris. This prediction is then added to the dataset as a new variable (`predicted_pct`) for further analysis. The results are saved in a CSV file (`vote_for_Harris_predictions.csv`), enabling an examination of potential outcomes in the vote. This approach facilitates an understanding of vote distributions at a national level and provides a foundation for forecasting electoral outcomes based on polling data.
+
+## Model Assumptions and Limitations
 
 We expect a positive relationship between the size of the wings and time spent aloft. In particular...
 
@@ -621,7 +644,7 @@ library(rstanarm)
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
+#modelsummary::modelsummary(
  # list(
   #  "First model" = first_model
   #),
@@ -641,9 +664,9 @@ If my paper were 10 pages, then should be be at least 2.5 pages. The discussion 
 
 Please don't use these as sub-heading labels - change them to be what your point actually is.
 
-## Third discussion point
+## Implications
 
-## Weaknesses and next steps
+## Weaknesses and Next Steps
 
 Weaknesses and next steps should also be included.
 

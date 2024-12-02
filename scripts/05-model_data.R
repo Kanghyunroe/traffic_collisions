@@ -42,6 +42,7 @@ motor_fatality_prediction_model <-
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
     prior_intercept = 
       normal(location = 0, scale = 2.5, autoscale = TRUE),
+    prior_aux = exponential(rate = 1, autoscale = TRUE),
     seed = 420,
     iter = 2000,
     init = "0"
