@@ -26,6 +26,7 @@ library(modelsummary)
 library(rstanarm)
 library(knitr)
 library(kableExtra)
+library(sjPlot)
 
 
 # Read in Analysis Data
@@ -568,7 +569,6 @@ summary_stats %>%
 ### Relevant Interaction Terms
 Why you have interaction between hour and all these things
 
-
 # Model
 
 ## Model Set-Up and Justification
@@ -587,72 +587,75 @@ $$Y_i =
 
 \begin{equation}
 \text{logit}(p_i) = \beta_{0} 
-+ \sum_{j=1}^{n} \beta_{\text{hour}_j} x_{\text{hour}_{ij}} 
-+ \beta_{2} x_{\text{InjuryCollision}_i} 
-+ \beta_{3} x_{\text{FTRCollision}_i} 
-+ \beta_{4} x_{\text{PDCollision}_i} 
-+ \beta_{5} x_{\text{automobile}_i} 
-+ \beta_{6} x_{\text{motorcycle}_i} 
-+ \beta_{7} x_{\text{passenger}_i} 
-+ \beta_{8} x_{\text{pedestrian}_i} 
-+ \sum_{z=1}^{a} \beta_{\text{PoliceDivision}_z} x_{\text{PoliceDivision}_{iz}} 
-+ \sum_{m=1}^{a} \beta_{\text{year}_m} x_{\text{year}_{im}} 
-+ \sum_{j=1}^{n} \beta_{\text{hour}_j \times \text{motorcycle}} x_{\text{hour}_{ij}} \cdot x_{\text{motorcycle}_i} 
-+ \sum_{j=1}^{n} \beta_{\text{hour}_j \times \text{pedestrian}} x_{\text{hour}_{ij}} \cdot x_{\text{pedestrian}_i} 
++ \beta_{1} x_{\text{hour}_{i}} 
++ \beta_{2} x_{\text{InjuryCollision}_{i}} 
++ \beta_{3} x_{\text{FTRCollision}_{i}} 
++ \beta_{4} x_{\text{PDCollision}_{i}} 
++ \beta_{5} x_{\text{automobile}_{i}} 
++ \beta_{6} x_{\text{motorcycle}_{i}} 
++ \beta_{7} x_{\text{passenger}_{i}} 
++ \beta_{8} x_{\text{pedestrian}_{i}} 
++ \beta_{9} x_{\text{PoliceDivision}_{i}} 
++ \beta_{10} x_{\text{year}_{im}} 
++ \beta_{11} x_{\text{hour}_{i}} \cdot x_{\text{motorcycle}_{i}} 
++ \beta_{12} x_{\text{hour}_{i}} \cdot x_{\text{pedestrian}_{i}} 
 + \epsilon_{i}
 \label{eq:logit}
 \end{equation}
 
-In equation \ref{eq:logit}, each $\beta$ represents a coefficient determined through regression analysis. The variables chosen for the model are hour, the different types of collisions, automobile, motorcycle, passenger, pedestrian, year, and police divsion. Each predictor variable was selected based on its significance in vehicle fatality prediction analysis. The different types of collisions 
-
-Hour5 and hour9 motorcycle dropped for zero effects
-fix for location effects
-temporal effects
-interaction terms fix for how different parts of the hour best affect (bicycle not included as had a precise null effect and prevent overfitting) 
-
- The identity of the polling organization is important to our model, as each pollster may exhibit unique biases. Including Pollster as a fixed effect allows us to account for these variations without introducing unnecessary complexity. Population Type distinguishes among different groups surveyed (e.g., voters, likely voters) and helps in capturing generalizability. Categorizing polls as either recent or older ensures that more recent polls are better predictors of voting behavior closer to the election. $Y_i$ denotes the predicted popular vote percentage for Kamala Harris in the $i$-th poll. $\epsilon_i$ is the Gaussian-distributed error term, accounting for residual variation in the model.
+In equation \ref{eq:logit}, each $\beta$ represents a coefficient determined through regression analysis. The variables chosen for the model are hour, the different types of collisions, automobile, motorcycle, passenger, pedestrian, year, and police division. Each predictor variable was selected based on its significance in vehicle fatality prediction analysis. Temporal variables such as hour and year are introduced as fixed effects to account for biases across time without introducing unnecessary complexity. Similarly, location introduces biases as some neighborhoods may be more susceptible to vehicle accidents than others, prompting the inclusion of police department as a fixed effect and a proxy for location. Furthermore, depending on the time of day, motorcyclists and pedestrians are more susceptible to fatal vehicle accidents than during the day. Thus, $\beta_{11}$ and $\beta_{12}$ represents the coefficient of an interaction term between motorcycle and pedestrian with the categorical variable hour, respectively, to account for potential variations in risk patterns associated with different times of the day. These interaction terms allow the model to capture the increased vulnerability of motorcyclists and pedestrians during specific hours, such as nighttime or early morning, when visibility and traffic conditions may differ significantly, thereby improving the precision and interpretability of the predictions. In addition, any variables, especially the various interaction terms, will be omitted if they display high multicolinearity or insignificance. Finally, $\epsilon_i$ is the Gaussian-distributed error term, accounting for residual variation in the model.
 
 To enhance the model, Bayesian priors were applied, introducing regularization and incorporating plausible ranges grounded. For the coefficient priors $\beta$, a normal distribution with a mean of 0 and a scale of 2.5 (autoscaled) was chosen to provide flexibility while mitigating overfitting. Similarly, the intercept uses a normal prior with a mean of 0 and a scale of 2.5 to stabilize model estimates. For the error term (sigma), an exponential prior with a rate of 1 was selected to constrain the residuals, aligning with Gaussian assumptions.
 
-The model was implemented in R [@citeR] using the `rstanarm` package, which offers an accessible interface for Bayesian generalized linear models (GLMs), allowing specification of priors and customization of model parameters. Once the logistic regression model for predicting the popular vote is developed, we apply the `predict()` function in R [@citeR] to generate popular vote percentage predictions for Harris. This prediction is then added to the dataset as a new variable (`predicted_pct`) for further analysis. The results are saved in a CSV file (`vote_for_Harris_predictions.csv`), enabling an examination of potential outcomes in the vote. This approach facilitates an understanding of vote distributions at a national level and provides a foundation for forecasting electoral outcomes based on polling data.
+The model was implemented in R [@citeR] using the `rstanarm` package, which offers an accessible interface for Bayesian generalized linear models (GLMs), allowing specification of priors and customization of model parameters. 
 
 ## Model Assumptions and Limitations
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+The model assumes independence of observations, meaning that each observation's outcome is not influenced by others. However, this assumption may be partially violated in the context of vehicle accidents, as incidents occurring within close temporal or spatial proximity may share common influencing factors, such as weather, road conditions, or traffic patterns. While the inclusion of temporal and spatial variables like hour and police division aims to mitigate such dependencies, it may not fully account for potential clustering effects. As a result, the model could underestimate or overestimate the significance of some predictors, impacting the robustness of its conclusions.
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
-
+Another important limitation is the potential for omitted variable bias and unmeasured confounding factors. For example, the model does not include variables like road infrastructure quality, driver impairment (e.g., alcohol or drug use), or real-time weather conditions, all of which could influence accident outcomes. Additionally, selection bias is a concern, as the dataset may disproportionately represent severe accidents reported for insurance claims while omitting less severe incidents. This could skew the model’s predictions toward more severe outcomes and limit its generalizability. Addressing these limitations would require incorporating additional data sources and applying techniques to account for potential dependencies and missing information. Additionally, the model relies on reported data, which may include potential selection bias, as minor accidents are less likely to be documented.
 
 # Results
 
-Our results are summarized in @tbl-modelresults.
+To assess model reliability, we examined several key metrics. Convergence metrics, such as Rhat values, were very close to 1 for all parameters, indicating strong convergence. Additionally, the effective sample size $\text{n_{eff}}$ was high across all parameters, suggesting low autocorrelation and contributing to model stability. See more details of our model diagnostics here: (INSERT REFERENCE)
 
 ```{r}
 #| echo: false
-#| eval: true
-#| warning: false
 #| message: false
+#| warning: false
+#| tbl-align: center
+#| label: tbl-modelresults
+#| tbl-cap: "Summary for Motor Vehicle Collision Fatality Prediction Model"
 
-library(rstanarm)
-
+modelsummary(
+  prediction_model,
+  output = "kableExtra",
+) 
 ```
+@tbl-modelresults presents the estimated coefficients for the predictors in our GLM model. These coefficients fit into the GLM equation, \ref{eq:logit}, allowing us to interpret the impact of each predictor on the likelihood of fatality in a vehicular accident. Most notably, motorcyclist (18.723) and pedestrian (7.403) collisions exhibit substantial positive associations with fatality occurance, which is in line with expectations. Moreover, motorcyclist accidents during rush hour (hour 16 and 17) have the highest coefficients at 32.688 and 21.926, respectively, and during the late evening, such as at 11:00 PM (34.365), indicating that a collision involving a motorcycle during rush hour or late evening is around 77\% likely to result in a fatality. We also find similar results with pedestrians as well. The type of collision variables all have a significant negative effect on the likelihood of death, as well.However, police division and year don't seem to have a significant impact on the likelihood of death. 
 
 ```{r}
 #| echo: false
-#| eval: true
-#| label: tbl-modelresults
-#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| message: false
 #| warning: false
+#| fig-align: center
+#| label: fig-coefficient-estimates
+#| fig-cap: "Coefficient Estimates for Predictors"
 
-#modelsummary::modelsummary(
- # list(
-  #  "First model" = first_model
-  #),
-  #statistic = "mad",
-  #fmt = 2
-#)
+# Tidy Model Summary Data
+coefficients <- broom.mixed::tidy(prediction_model, conf.int = TRUE) %>%
+  mutate(across(c(estimate, std.error, conf.low, conf.high), round, 2))
+
+# Make Plot
+coefficients %>%
+  ggplot(aes(estimate, term)) + 
+  geom_point() + 
+  geom_errorbar(aes(xmin = conf.low, xmax = conf.high)) + 
+  labs(x = "Estimate", y = "Predictor") +
+  theme(axis.text.y = element_text(size = 7))
 ```
 
+@fig-coefficient-estimates represents the model coefficients, with error bars indicating the confidence interval for each estimate. While most variables are relatively in line, it seems that the automobile and motorcycle variables demonstrate high variability in its estimates.
 
 # Discussion
 
