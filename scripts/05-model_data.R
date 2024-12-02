@@ -19,36 +19,24 @@ analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 ### Model data ####
 
 # Convert variables to factors
-analysis_data$month <- factor(analysis_data$month)
+analysis_data$hour <- factor(analysis_data$hour)
 analysis_data$year <- factor(analysis_data$year)
 analysis_data$police_division <- factor(analysis_data$police_division)
 
-# Get the reduced dataset of only 1000 randomly selected data entries
-motor_fatality_reduced_data <- slice_sample(analysis_data, n = 2000)
+# Sample a reduced dataset using Stratified Sampling 
+motor_fatality_reduced_data <- analysis_data %>%
+  group_by(fatalities) %>%
+  slice_sample(n = 2000 / n_distinct(analysis_data$fatalities)) %>%
+  ungroup()
 
 set.seed(420)
-
-# Base Model
-motor_fatality_base_model<-
-  stan_glm(
-    fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
-      motorcycle + passenger + bicycle + pedestrian,
-    data = motor_fatality_reduced_data,
-    family = binomial(link = "logit"),
-    prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
-    prior_intercept = 
-      normal(location = 0, scale = 2.5, autoscale = TRUE),
-    seed = 420,
-    iter = 2000,
-    init = "0"
-  )
 
 # Extension Model with Interaction and Fixed Effects
 
 motor_fatality_prediction_model <-
   stan_glm(
     fatalities ~ hour + injury_collision + fail_to_remain_collision + property_damage_collision + automobile + 
-      motorcycle + passenger + bicycle + pedestrian + police_division + year + hour*automobile + hour*pedestrian + hour* motorcycle + hour*passenger + hour*bicycle,
+      motorcycle + passenger + bicycle + pedestrian + police_division + year,
     data = motor_fatality_reduced_data,
     family = binomial(link = "logit"),
     prior = normal(location = 0, scale = 2.5, autoscale = TRUE),
@@ -61,13 +49,7 @@ motor_fatality_prediction_model <-
 
 
 #### Save models ####
-summary(motor_fatality_base_model)
 summary(motor_fatality_prediction_model)
-
-saveRDS(
-  motor_fatality_base_model,
-  file = "models/motor_fatality_base_model.rds"
-)
 
 saveRDS(
   motor_fatality_prediction_model,
@@ -75,13 +57,6 @@ saveRDS(
 )
 
 #### Posterior Model Checks ####
-
-# Base Model Checks
-posterior_predict(motor_fatality_base_model)
-pp_check(motor_fatality_base_model)
-
-base_posterior_summary <- describe_posterior(motor_fatality_base_model)
-print(base_posterior_summary)
 
 # Extension Model Checks
 posterior_predict(motor_fatality_prediction_model)
