@@ -30,6 +30,6 @@ library(arrow)
 data <- 
   read_csv("https://ckan0.cf.opendata.inter.prod-toronto.ca/dataset/ec53f7b2-769b-4914-91fe-a37ee27a90b3/resource/cb890861-ed20-4862-bb75-b1f9ec1e58dd/download/Traffic%20Collisions%20-%204326.csv")
 #### Save data ####
-write_parquet(data, "data/01-raw_data/raw_data.parquet") 
+write_csv(data, "data/01-raw_data/raw_data.csv") 
 
          
