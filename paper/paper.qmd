@@ -1,12 +1,11 @@
 ---
-title: "My title"
-subtitle: "My subtitle if needed"
+title: "Predicting Fatalities in Toronto Car Crashes: Analyzing the Impact of Time, Vehicle Type, and Other Collision Factors"
 author: 
   - Kevin Roe
 thanks: "Code and data are available at: [https://github.com/Kanghyunroe/traffic_collisions/tree/main](https://github.com/Kanghyunroe/traffic_collisions/tree/main)."
 date: today
 date-format: long
-abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
+abstract: "This study aims to predict the likelihood of fatality in motor vehicle collisions (MVCs) in Toronto from 2014 to 2023, using data on crash time, vehicle type, and collision characteristics. By analyzing the interaction between hour of the day and vehicle types, including motorcycles and pedestrians, the model identifies key factors contributing to fatal outcomes. Results indicate that late-afternoon to evening hours, particularly between 4 PM and 11 PM, show a higher likelihood of fatalities, with motorcycles and pedestrians significantly increasing fatality risk. The model achieved a high predictive accuracy, demonstrating its potential in informing safety policies and interventions in Toronto."
 format: pdf
 number-sections: true
 toc: true
@@ -654,7 +653,7 @@ pedestrian_fatalities <- analysis_data %>%
 
 # Plot interaction between hour and pedestrian fatalities
 ggplot(pedestrian_fatalities, aes(x = hour, y = pedestrian_fatalities)) +
-  geom_point(color = "red", size = 2) +
+  geom_line(color = "green", size = 2) +
   theme_minimal() +
   labs(x = "Hour of Day",
        y = "Pedestrian Fatalities") +
