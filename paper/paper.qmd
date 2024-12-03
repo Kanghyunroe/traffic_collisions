@@ -44,19 +44,19 @@ prediction_model <- readRDS(file = here(
 
 Automobile fatalities are a leading cause of death worldwide, posing a public health and safety concern for urban cities. For example, in 2024, thirty people have died on Toronto's roadways so far, which is a 20% increase from last year (insert citation, CBC). However, new headlines, such as CBCs, highlight that Motor Vehicle Collisions (MVC) tend to either be generalized as a summary statistic or typically fatal events are over analyzed to the extent that environmental factors surrounding the crash are ignored (CLARIFY). Moreover, general environmental factors such as the time of the crash or if a bicycle was involved in the accident are important to understand what increases the likelihood of a fatality occurring in an MVC. The use of statistical modeling on increasingly available vehicle collision data presents an opportunity to develop a nuanced understanding of what factors increases the likelihood for a fatality to occur in an accident. This paper uses the Toronto Police Service's  Annual Statistical Report from Open Data Toronto to analyze what factors are most responsible in predicting if a fatality occurs in a MVC.
 
-The estimand of interest is the log-adjusted probability of a fatality occuring in a MVC. Specifically, we aim to quanitfy how specific environmental factors increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties (EDIT).
+The estimand of interest is the log-adjusted probability of a fatality occurring in a MVC. Specifically, we aim to quantify how specific environmental factors increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties.
 
 Our analysis identifies key predictors of vehicular accident fatalities, emphasizing heightened risks for motorcyclists (coefficient: 17.036) and pedestrians (coefficient: 6.809), especially during rush hours (hours 16 and 17) and late evenings (11:00 PM), where motorcycle collisions show a fatality likelihood of around 66%. Collision type variables, such as injury and property damage collisions, significantly lower fatality risks, while police division and year have minimal impact. However, variability in estimates, particularly for motorcyclist and automobile predictors, highlights uncertainty in their precise effects, underscoring the need for targeted interventions during high-risk times and for vulnerable populations.
 
 The paper is not only important from a public health perspective, but the paper also has policy development implications. Road safety and reducing fatal MVCs are a critical agenda item of any municipal government. The paper informs what factors increase the likelihood of death in an MVC, which informs policymakers' focus for relevant policy design. 
 
-The remainder of this paper is structured as follows: @sec-data describes the dataset and methodology and @sec-model exhibits the use of inferential models. @Sec-results presents the results of the analysis, detailing the observed relationships between likelihood of death and various circumstantial factors. @sec-discussion discusses the broader implications and limitations of our findings.@sec-appendix presents a detailed idealized methodology to improve data collection, and additional model summary and diagnostic information.  
+The remainder of this paper is structured as follows: @sec-data describes the dataset and methodology and @sec-model exhibits the use of inferential models. @sec-results presents the results of the analysis, detailing the observed relationships between likelihood of death and various circumstantial factors. @sec-discussion discusses the broader implications and limitations of our findings.@sec-appendix presents a detailed idealized methodology to improve data collection, and additional model summary and diagnostic information.  
 
 # Data {#sec-data}
 
-## Overview
+## Overview {#sec-data-overview}
 
-This dataset, "Police Annual Statistical Report - Traffic Collisions", was published and refreshed on October 21st, 2024, by the Toronto Police Service [insert citation]. The Toronto Police Service publishes various datasets on public safety and crime to inform the public about safety issues [@annual_statistics_report]. Data on traffic collisions is included in the Toronto Police Service's Annual Statistical Report, which also covers reported crimes, search of persons, firearms, and the Police Service's budget [@annual_statistics_report]. The data is collected using historical Motor Vehicle Collisions and classifies them into the following categories: 
+This dataset, "Police Annual Statistical Report - Traffic Collisions", was published and refreshed on October 21st, 2024, by the Toronto Police Service [@vehiclecollision]. The Toronto Police Service publishes various datasets on public safety and crime to inform the public about safety issues [@annual_statistics_report]. Data on traffic collisions is included in the Toronto Police Service's Annual Statistical Report, which also covers reported crimes, search of persons, firearms, and the Police Service's budget [@annual_statistics_report]. The data is collected using historical Motor Vehicle Collisions and classifies them into the following categories: 
 * Property Damage (PD) Collisions
 * Fail to Remain (FTR) Collisions, or commonly known as hit-and-run accidents
 * Injury Collisions
@@ -64,17 +64,17 @@ This dataset, "Police Annual Statistical Report - Traffic Collisions", was publi
 
 Following the Municipal Freedom of Information and Protection of Privacy Act, the Toronto Police Service ensures to protect the privacy of individuals involved in the reported crimes when publishing the data. The dataset is updated annually, is open data, and can be used if an attribution statement @sec-appendix-attribution and is properly cited [@tphlicense]. Each entry in the dataset represents a singular vehicular accident and records all MVCs from 2015.  
 
-There is an alternative dataset from the Toronto Police Service called "Motor Vehicle Collisions involving Killed or Seriously Injured Persons" (CITE). Unlike the alternative dataset, this paper's dataset focuses on all collisions, instead of only focusing on ones where someone was either killed or seriously injured. While the alternative dataset has more explanatory variables simply because more data is collected when someone dies or is seriously injured, this paper's aims to generalize if a fatality is more likely to occur based on the general circumstances surrounding a crash, such as the time of day or if property damage occurred. In addition, each entry in the alternative dataset represents a killed or injured person, meaning that there exists the possibility for duplicate entries. However, each entry in the selected dataset is a unique Motor Vehicle Collision, making it more suitable for the scope of this paper Thus, we ended up not going with the alternative dataset for this paper, but there are variables in the alternative dataset that may motivate future research on this subject. (EDIT TO MAKE MORE CLEAR)
+There is an alternative dataset from the Toronto Police Service called "Motor Vehicle Collisions involving Killed or Seriously Injured Persons" [@alternativedataset]. Unlike the alternative dataset, this paper's dataset focuses on all collisions, instead of only focusing on ones where someone was either killed or seriously injured. While the alternative dataset has more explanatory variables simply because more data is collected when someone dies or is seriously injured, this paper's aims to generalize if a fatality is more likely to occur based on the general circumstances surrounding a crash, such as the time of day or if property damage occurred. In addition, each entry in the alternative dataset represents a killed or injured person, meaning that there exists the possibility for duplicate entries. However, each entry in the selected dataset is a unique Motor Vehicle Collision, making it more suitable for the scope of this paper Thus, we ended up not going with the alternative dataset for this paper, but there are variables in the alternative dataset that may motivate future research on this subject. (EDIT TO MAKE MORE CLEAR)
 
-The paper uses the R programming language [@citeR] to analyze the dataset. The tidyverse package was used to simulate the dataset. Also, the tidyverse [@citetidyverse], arrow [CITE] and opendatatoronto [@citeopendatatoronto] packages were used to download the Victims of Crime dataset. Then, the tidyverse [@citetidyverse] package was used to clean the raw dataset and generate tests. The testthat package [CITE THIS] was used to create tests for our cleaned dataset. Rstanarm [CITE], Arrow [CITE], and bayestestR [CITE] were used to create and test the model. Finally, ggplot2 [@citeggplot2], tidyverse [@citetidyverse], knitr [@citeknitr] and scales [@citescales] packages were used to create the tables and graphs to display the results. [edit this paragraph]
+The paper uses the R programming language [@citeR] to analyze the dataset. The tidyverse package was used to simulate the dataset [@tidyverse]. Also, the tidyverse [@tidyverse], here [@here], arrow [@citearrow] and opendatatoronto [@citeopendatatoronto] packages were used to download the Victims of Crime dataset. Then, the tidyverse [@tidyverse] package was used to clean the raw dataset and generate tests. The testthat package [@citetestthat] was used to create tests for our cleaned dataset. rstanarm [@rstanarm], Arrow [@citearrow], and bayestestR [@citebayestestr] were used to create and test the model. Finally, ggplot2 [@ggplot2], tidyverse [@tidyverse], knitr [@citeknitr] and scales [@citescales] packages were used to create the tables and graphs to display the results. [edit this paragraph]
 
-## Measurement
+## Measurement {#sec-data-measurement}
 
-Transforming a real-life Motor Vehicle Collision to an entry in the dataset is a well-documented process by the Toronto Police Service. For insurance purposes, the Toronto Police Service requires drivers to fill out the Motor Vehicle Collision Report for any collisions that occur in Toronto (CITE). Drivers required to fill out a motor vehicle collision report if the combined damage is more than $2000, if someone is injured, if a criminal act such as a DUI occurs, or if a pedestrian is involved in the accident (CITE). These reports are retained for six years by the Toronto Police Service, with the exception of collisions resulting in a fatality, which are retained indefinitely. The form ensures documentation of collision characteristics, location, road condition, and the extent of damages, systematically recording the characteristics of each crash for further criminal investigation and data analysis.
+Transforming a real-life Motor Vehicle Collision to an entry in the dataset is a well-documented process by the Toronto Police Service. For insurance purposes, the Toronto Police Service requires drivers to fill out the Motor Vehicle Collision Report for any collisions that occur in Toronto [@tps_mvc_reports]. Drivers required to fill out a motor vehicle collision report if the combined damage is more than $2000, if someone is injured, if a criminal act such as a DUI occurs, or if a pedestrian is involved in the accident [@tps_mvc_reports]. These reports are retained for six years by the Toronto Police Service, with the exception of collisions resulting in a fatality, which are retained indefinitely. The form ensures documentation of collision characteristics, location, road condition, and the extent of damages, systematically recording the characteristics of each crash for further criminal investigation and data analysis.
 
 For every collision, basic facts such as the location, time, and date of the collision is recorded through the Motor Vehicle Collision Report. Majority if not all the factors recorded in the dataset are all objective measurements regarding the specific details such as if a motorcycle was involved in the collision or if the collision resulted in property damage. All of these details are recorded in the Motor Vehicle Collision Report for all vehicular collisions and are entered into the dataset. However, while the Motor Vehicle Collision Report logs characteristics such as environmental conditions, alcohol involvement, or fatigue, the data set does not include them due to inconsistent data measurement techniques. Moreover, personal details such as the driver's age are not included to protect the driver's privacy.  
 
-## Outcome variables
+## Outcome variables {#sec-data-outcome}
 
 The main outcome variable records the number of fatalities for each MVC. According to the dataset, a fatal collision occurs when an individual's injuries from a collision results in a fatality within 30 days. Fatal collisions excludes occurences on private property, ones related to suddend eath prior to collision, such as suicide, and where the individuals has died more than 30 days after the collision. However, because we are more interested in predicting the probability that a fatality occurs than the number of fatalities, we transformed the variable that distinguishes collisions between if the collision resulted in any fatalities and those without fatalities. In the raw dataset, if there were no fatalities, the entry was recorded as NA, but if there were fatalities, then the number of fatalities were recorded. However, we transformed the dataset that all if a fatality occurred then fatalities indicates `1` and if there were no fatalities then the fatalities column records a '0'. The distribution of the raw dataset is shown in @fig-fatalities-raw. 
 
@@ -98,7 +98,7 @@ ggplot(raw_data %>% mutate(FATALITIES = replace_na(FATALITIES, 0)),
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
 ```
-However, after the transformation, the outcome variable now takes on binary values and the distribution and summary statistics are shown below in @fig-fatalites-cleaned and @tbl-fatalites: 
+However, after the transformation, the outcome variable now takes on binary values and the distribution and summary statistics are shown below in @fig-fatalities-cleaned and @tbl-fatalities: 
 
 ```{r}
 #| label: fig-fatalities-cleaned
@@ -148,9 +148,9 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 
 ```
-## Predictor variables
+## Predictor variables {#sec-data-predictor}
 
-### Hour
+### Hour {#sec-data-predictor-hour}
 
 The hour variable indicates the time at which the accident occurred using the 24 hour clock, such that a value of 0 represents 12 AM and 23 represents 11 PM. The distribution and summary statistics of the hour variable can be found in @fig-hour and @tbl-hour, respectively. @fig-hour highlights that the majority of accidents happen from 9 AM to 7 PM, which is reasonable as these times include rush hour, where the greatest number of people are driving at the same time for work or school. However, @tbl-hour also shows that a greater number of fatalities occur at night, which we hypothesize is due to lack of vision or reckless driving. 
 
@@ -200,7 +200,7 @@ summary_stats %>%
 
 ```
 
-### Type of Crash
+### Type of Crash {#sec-data-predictor-crash}
 
 Beyond identifying fatalities, the Motor Vehicle Collision Reports notes if the crash was one of three types: an injury collision, a fail to remain collision, and a property damage collision. A personal injury collision occur when an individual involved in a MVC suffers personal injuries. Fail to remain collisions are recorded when an individual involved in a collision fail to stop and provide their information at the scene of a collision. Property damage collisions occur when an individual has been damaged in a collision or the value of damages is less than $\2000 for all parties. The distribution and summary statistics of these three variables can be found in @fig-crashtype and @tbl-crashtype. The results in @tbl-crashtype show that crashes that classify under these three categories usually do not lead to death. 
 
@@ -280,7 +280,7 @@ summary_stats %>%
 
 ```
 
-### Automobile 
+### Automobile {#sec-data-predictor-automobile}
 
 The automobile variable is a indicator variable to show if a collision involved a person in an automobile. In the raw dataset, the variable was labeled as Yes, No, None or N/R (Not Recorded). We labelled Not Recorded as NA because there is no reliable way of characterizing the variable. Further, we labeled No and None as 0 and Yes as 1, where 1 represents that an automobile was involved and 0 represents that an automobile was not, such as a crash between two motorcycles. We also employed this method for the following variables: motorcycle, passenger, and pedestrian. 
 
@@ -333,7 +333,7 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-### Motorcycle
+### Motorcycle {#sec-data-predictor-motorcycle}
 
 The motorcycle variable is another indicator variable to show that whether the collision involved a person in a motorcycle. 1 represents that a motorcycle was involved and 0 represents that a motorcycle was not involved in the crash. @fig-motorcycle and @tbl-motorcycle shows the distribution and summary of the motorcycle variable, respectively. @tbl-motorcycle shows that only 75 vehicular deaths involved a motorcycle. 
 
@@ -381,7 +381,7 @@ summary_stats %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
-### Passenger
+### Passenger {#sec-data-predictor-passenger}
 
 The passenger variable is an indicator variable that highlights if the collision involved a passenger in a motor vehicle. 1 represents there was a passenger and 0 shows that there was not a passenger involved. @fig-passenger and @tbl-passenger shows the distribution and summary of the passenger variable, respectively. @tbl-passenger shows that 177 vehicular deaths involved a passenger. 
 
@@ -429,7 +429,7 @@ summary_stats %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
-### Pedestrian
+### Pedestrian {#sec-data-predictor-pedestrian}
 
 The pedestrian variable is an indicator variable that highlights if the collision involved a pedestrian. 1 represents a pedestrian was involved and 0 shows that there was no pedestrian. @fig-pedestrian and @tbl-pedestrian shows the distribution and summary of the pedestrian variable, respectively. @tbl-pedestrian highlights that of 606 deaths, 342 deaths involved pedestrians, which is a significant percentage. 
 
@@ -477,7 +477,7 @@ summary_stats %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
-### Police Division
+### Police Division {#sec-data-predictor-police}
 
 The Police Division variable represents the police division where the collision occured. The paper plans to include the police division variable as a general proxy for location and account if certain areas are more susceptible to crashes than others. @fig-division and @tbl-division shows the distirbution and breakdown of MVCs among police departments.Based on the @tbl-division, there seems to be no discernible pattern but D41 and D42 have the highest number of vehicular fatalities at 63 and 66, respectively. 
 
@@ -525,7 +525,7 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-### Year 
+### Year {#sec-data-predictor-year}
 
 The year variable shows the number of MVCs per year. @fig-year and @tbl-year shows the number of MVCs over time. Looking at @fig-year and @tbl-year there is a noticeable dip in MVCs in 2020 and 2021 due to COVID-19 but MVC levels have not hit their 2019 peaks most likely due to people in Toronto not driving as much as before. However, idea of fewer drivers is a hypothesis and needs further research. 
 
@@ -575,11 +575,11 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-### Interaction Terms 
+### Interaction Terms {#sec-data-predictor-interaction} 
 
 Due to the compounded effects of the time of hour on motorcyclists and pedestrians in a motor vehicle collision, we controlled for this effect using an interaction term: 
 
-#### Hour and Motorcycle
+#### Hour and Motorcycle {#sec-data-predictor-interaction-hourmotorcycle} 
 
 @fig-hour-motorcycle and @tbl-hour-motorcycle shows the visual representation and summary of the interaction term, respectively. @fig-hour-motorcycle shows that a significant number of deaths come in the evening from 2 PM to 11 PM.
 
@@ -631,7 +631,7 @@ summary_stats_motorcycle %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
 
-#### Hour and Pedestrian
+#### Hour and Pedestrian {#sec-data-predictor-interaction-hourpedestrian} 
 
 @fig-hour-pedestrian and @tbl-hour-pedestrian shows the distribution and summary of the interaction variable, respectively. @fig-hour-pedestrian, though showing high variability, shows that a lot more pedestrian deaths also happen in the evening. 
 
@@ -683,9 +683,9 @@ summary_stats_pedestrian %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 ```
-# Model
+# Model {#sec-model} 
 
-## Model Set-Up and Justification
+## Model Set-Up and Justification {#sec-model-setupjustification}
 
 For our analysis, we employ a Bayesian Logistic Linear Model to forecast the likelihood of a fatality in a car crash. This approach allows us to capture known variations between years, police divisions, and the characteristics of a crash, such as the involvement of a motorcycle or if someone was injured. 
 
@@ -725,13 +725,13 @@ To enhance the model, Bayesian priors were applied, introducing regularization a
 
 The model was implemented in R [@citeR] using the `rstanarm` package, which offers an accessible interface for Bayesian generalized linear models (GLMs), allowing specification of priors and customization of model parameters. 
 
-## Model Assumptions and Limitations
+## Model Assumptions and Limitations {#sec-model-assumptions}
 
 The model assumes independence of observations, meaning that each observation's outcome is not influenced by others. However, this assumption may be partially violated in the context of vehicle accidents, as incidents occurring within close temporal or spatial proximity may share common influencing factors, such as weather, road conditions, or traffic patterns. While the inclusion of temporal and spatial variables like hour and police division aims to mitigate such dependencies, it may not fully account for potential clustering effects. As a result, the model could underestimate or overestimate the significance of some predictors, impacting the robustness of its conclusions.
 
 Another important limitation is the potential for omitted variable bias and unmeasured confounding factors. For example, the model does not include variables like road infrastructure quality, driver impairment (e.g., alcohol or drug use), or real-time weather conditions, all of which could influence accident outcomes. Additionally, selection bias is a concern, as the dataset may disproportionately represent severe accidents reported for insurance claims while omitting less severe incidents. This could skew the model’s predictions toward more severe outcomes and limit its generalizability. Addressing these limitations would require incorporating additional data sources and applying techniques to account for potential dependencies and missing information. Additionally, the model relies on reported data, which may include potential selection bias, as minor accidents are less likely to be documented.
 
-# Results
+# Results {#sec-results}
 
 To assess model reliability, we examined several key metrics. Convergence metrics, such as Rhat values, were very close to 1 for all parameters, indicating strong convergence. Additionally, the effective sample size $n_{\text{eff}}$ was high across all parameters, suggesting low autocorrelation and contributing to model stability. See more details of our model diagnostics here: (INSERT REFERENCE)
 
@@ -775,7 +775,7 @@ coefficients %>%
 
 @fig-coefficient-estimates represents the model coefficients, with error bars indicating the confidence interval for each estimate. While most variables are relatively in line, it seems that the interaction terms all have wide confidence intervals, suggesting high variability in its estimates. 
 
-# Discussion
+# Discussion {#sec-discussion}
 
 ## Contextualizing Role of Motorcyclists and Pedestrians {#sec-discussion-contextualization}
 
@@ -829,15 +829,15 @@ As a next step, future research should focus on collecting more granular, real-t
 
 \appendix
 
-# Appendix {-}
+# Appendix {#sec-appendix}
 
-## Exploration of Surveys, Sampling, and Observational Data
+## Exploration of Surveys, Sampling, and Observational Data {#sec-appendix-sso}
 
-### Data Collection Methodology 
+### Data Collection Methodology {#sec-appendix-sso-methodology}
 
-The Toronto Police Service's Motor Vehicle Collision database is collected using a systematic process. When a collision occurs such that where persons are injured or a combined damage is valued at more than $\2000 to vehicles or property, or damage to any private, municipal or highway property, police officers complete a standardized Motor Vehicle Accident Report form. This data is then maintained by the City of Toronto, where the collection process follow a standardized process highlighted in the Motor Vehicle Collision Report manual (CITATION), ensuring reporting consistency. The dataset also defines a collision: the contact resulting from the motion of a motor vehicle or a street car of its load, which produces property damage, injury or death. A standardized definition ensures consistent reporting by the Toronto Police Service and highlights the dataset's clear boundaries. 
+The Toronto Police Service's Motor Vehicle Collision database is collected using a systematic process. When a collision occurs such that where persons are injured or a combined damage is valued at more than $\2000 to vehicles or property, or damage to any private, municipal or highway property, police officers complete a standardized Motor Vehicle Accident Report form. This data is then maintained by the City of Toronto, where the collection process follow a standardized process highlighted in the Motor Vehicle Collision Report manual [@mvcr_guide], ensuring reporting consistency. The dataset also defines a collision: the contact resulting from the motion of a motor vehicle or a street car of its load, which produces property damage, injury or death. A standardized definition ensures consistent reporting by the Toronto Police Service and highlights the dataset's clear boundaries. 
 
-For every accident that requires one to fill out the Motor Vehicle Accident Report form, the police officer fills out the SR-LD-402 form (CITATION). The process ensures consistency in reporting key details surrounding a motor vehicle accident.However, because police officers only need to fill out this form in specific instances, the data set only includes collisions where police officers were present or serious incidents that required a report. As a result, minor offences are usually left out in the dataset and often go unreported. 
+For every accident that requires one to fill out the Motor Vehicle Accident Report form, the police officer fills out the SR-LD-402 form [@mvcr_guide]. The process ensures consistency in reporting key details surrounding a motor vehicle accident.However, because police officers only need to fill out this form in specific instances, the data set only includes collisions where police officers were present or serious incidents that required a report. As a result, minor offences are usually left out in the dataset and often go unreported. 
 
 The dataset primarily focuses on all types of Motor Vehicle Collisions. The dataset specifically focuses on property damage collisions, fail to remain collisions, injury collisions and fatalities. Fatal Collisions occur when an individual’s injuries from a MVC result in a fatality within 30 days. Fatal Collisions excludes occurrences on private property, ones related to sudden death prior to collision, such as suicide, and occurrences where the individual has died more than 30 days after the collision. Personal Injury Collisions occur when an individual involved in a MVC suffers personal injuries. Fail to Remain Collisions occur when an individual involved in a MVC fails to stop and provide their information at the scene of a collision. Property Damage Collisions occur when an individual’s property has been damaged in a MVC or the value of damages is less than $2,000 for all involved These defintions, specifically the one for Fatal Collisions, sets a clear boundary for data inclusion, but excludes motor vehicle accidents that occur on private property.
 
@@ -845,7 +845,7 @@ Each entry in the dataset represents a single Motor Vehicle Collision incident. 
 
 A notable aspect of the dataset is its handling of spatial data. Each collision includes the approximate latitude and longitude coordinates. The location of calls for service have been deliberately offset to the nearest road intersection node to protect the privacy of parties. Because of the offset of offences location, the coordinates may not reflect the exact count of occurrences.The statistics at the neighborhood level may not reflect the true location of the collisions. The Toronto Police Service acknowledges these limitations and does not guarantee the accuracy, completeness, timeliness of the data, and TPS encourages to not compare it to any source of crime data. 
 
-### Idealized Methodology
+### Idealized Methodology {#sec-appendix-sso-idealized}
 
 The current data collection methodology employed by the Toronto Police Service provides valuable insights into Motor Vehicle Collisions (MVCs), yet several enhancements could make the dataset more comprehensive and actionable. Expanding the criteria for reporting is a critical first step. By including minor collisions that do not meet the $2,000 damage threshold or require police presence, the city can gain a fuller understanding of road safety dynamics. A self-reporting mechanism, such as an online portal or app, would allow drivers and witnesses to log details of these incidents conveniently. Additionally, redefining fatality criteria to include deaths occurring beyond 30 days due to collision-related injuries would align the dataset with public health standards, ensuring fatalities are not undercounted.
 
@@ -853,18 +853,18 @@ Incorporating advanced data collection techniques could significantly enhance da
 
 Expanding the scope of variables collected in collision reports is another avenue for improvement. Adding details about driver behavior (e.g., speeding or distracted driving), the involvement of emerging vehicle technologies (e.g., self-driving systems), and the road environment (e.g., construction zones) can offer richer insights into the conditions that contribute to MVCs. This would help policymakers and researchers better understand the interplay of human, environmental, and technological factors in collision outcomes.
 
-### Example Survey
+### Example Survey {#sec-appendix-sso-survey}
 
 To gather more information about motor vehicle collisions, I've attached a proposed survey to better understand the factors that contribute to fatalities and injuries. We aim to replicate something similar to the Motor Vehicle Collision Report and aim to collect data for car crashes in Toronto. All responses will be confidential. I've attached the proposed survey [here](https://forms.gle/C1uBXbbUddNvZMR4A). 
 
 \newpage
 
-## Enhancement: Model Card 
+## Model Card {#sec-appendix-modelcard}
 
-### Model Overview
+### Model Overview {#sec-appendix-modelcard-overview}
 This model predicts the occurrence of motor vehicle collisions (MVCs) based on various factors, including the time of day (hour), type of vehicle involved (motorcycle, pedestrian, automobile, etc.), and police division. The model is trained using data from 2015 to 2024, with a focus on the interactions between the hour of the day and motorcycle or pedestrian involvement.
 
-### Model Details
+### Model Details {#sec-appendix-modelcard-details}
 
 - **Model Type**: Bernoulli regression (logistic regression for binary outcomes)
 - **Target Variable**: Binary classification of motor vehicle collisions (occurrence of MVCs)
@@ -876,7 +876,7 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
   - Police division (D12, D13, etc.)
   - Year of the accident (2015–2024)
 
-### Model Coefficients
+### Model Coefficients {#sec-appendix-modelcard-coefficients}
 
 - **Intercept**: 9.705
 - **Hour Coefficients**:
@@ -975,7 +975,7 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
     - `hour22 × pedestrian`: 1.760
     - `hour23 × pedestrian`: -2.690
   
-#### Interaction Terms
+#### Interaction Terms {#sec-appendix-modelcard-interaction}
 
 - **Hour and Motorcycle**:
   - `hour1 × motorcycle`: 31.900, significant interaction in early morning hours, suggesting motorcycle accidents are more likely during certain hours.
@@ -984,7 +984,7 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
   - `hour1 × pedestrian`: 15.095, significant pedestrian accidents in the early morning hours.
   - Other significant hours include `hour2 × pedestrian` (29.594) and `hour5 × pedestrian` (23.943), highlighting peak pedestrian accident hours.
   
-### Model Performance Metrics
+### Model Performance Metrics {#sec-appendix-modelcard-performance}
 
 - **R²**: 0.992, indicating excellent fit to the data.
 - **Log Likelihood**: -0.082
@@ -993,7 +993,7 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
 - **Watanabe-Akaike Information Criterion (WAIC)**: 21.3
 - **Root Mean Squared Error (RMSE)**: 0.00, indicating near-perfect predictive accuracy.
 
-### Training Time
+### Training Time {#sec-appendix-modelcard-time}
 - **Chain 1**:
   - Warm-up: 29.99 seconds
   - Sampling: 26.11 seconds
@@ -1011,7 +1011,7 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
   - Sampling: 19.17 seconds
   - Total: 41.57 seconds
 
-### Conclusion
+### Conclusion {#sec-appendix-modelcard-conclusion}
 The model performs exceptionally well in predicting motor vehicle collisions based on hour, vehicle type, and other factors, with the highest predictive power for motorcycle-related accidents. Key interactions, such as between hour and motorcycle or pedestrian, highlight the importance of specific hours of the day in predicting collision occurrences. This model can be used for more effective traffic safety planning and intervention strategies.
 
 \newpage
@@ -1022,7 +1022,7 @@ The model performs exceptionally well in predicting motor vehicle collisions bas
 
 ## Model Diagnostics {#sec-appendix-diagnostics}
 
-@fig-ppcheck compares observed data (dark line) with replicated posterior predictions (light blue lines). The close alignment suggests that the model accurately captures the data's central tendency and variability. @fig-convergencecheckTrace and @fig-convergencecheckRhat show that the sampling algorithm used, the Markov chain Monte Carlo (MCMC) algorithm, did not run into issues as the posterior distribution for the model was created. Using the checks presented by @citetellingstorieswithdata, both graphs do not show anything abnormal since the trace plots in @fig-convergencecheckTrace display substantial horizontal fluctuation across chains, indicating good mixing, while the Rhat values in @fig-convergencecheckRhat are close to 1 and well below 1.05, further supporting convergence.
+@fig-ppcheck compares observed data (dark line) with replicated posterior predictions (light blue lines). The close alignment suggests that the model accurately captures the data's central tendency and variability. @fig-convergencecheckTrace and @fig-convergencecheckRhat show that the sampling algorithm used, the Markov chain Monte Carlo (MCMC) algorithm, did not run into issues as the posterior distribution for the model was created. Using the checks presented by @tellingstories, both graphs do not show anything abnormal since the trace plots in @fig-convergencecheckTrace display substantial horizontal fluctuation across chains, indicating good mixing, while the Rhat values in @fig-convergencecheckRhat are close to 1 and well below 1.05, further supporting convergence.
 
 ```{r}
 #| echo: false

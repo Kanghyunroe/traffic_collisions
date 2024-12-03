@@ -10,7 +10,7 @@
   }
   
   
-@Article{thereferencecanbewhatever,
+@Article{tidyverse,
     title = {Welcome to the {tidyverse}},
     author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
     year = {2019},
@@ -20,43 +20,39 @@
     pages = {1686},
     doi = {10.21105/joss.01686},
   }  
-  
-  
-@Manual{citeLahman,
-    title = {{Lahman: Sean `Lahman' Baseball Database}},
-    author = {Michael Friendly and Chris Dalzell and Martin Monkman and Dennis Murphy},
-    year = {2020},
-    note = {R package version 8.0-0},
-    url = {https://CRAN.R-project.org/package=Lahman},
-  }  
-  
-  
-@article{gebru2021datasheets,
-  title={Datasheets for datasets},
-  author={Gebru, Timnit and Morgenstern, Jamie and Vecchione, Briana and Vaughan, Jennifer Wortman and Wallach, Hanna and Iii, Hal Daum{\'e} and Crawford, Kate},
-  journal={Communications of the ACM},
-  volume={64},
-  number={12},
-  pages={86--92},
-  year={2021},
-  publisher={ACM New York, NY, USA}
-}
+
 
 @Misc{rstanarm,
-    title = {{rstanarm: {Bayesian} applied regression modeling via {Stan}}},
+    title = {rstanarm: {Bayesian} applied regression modeling via {Stan}},
     author = {Ben Goodrich and Jonah Gabry and Imad Ali and Sam Brilleman},
     note = {R package version 2.21.3},
     year = {2022},
     url = {https://mc-stan.org/rstanarm/},
   }
   
-@Manual{palmerpenguins,
-    title = {{palmerpenguins: Palmer Archipelago (Antarctica) penguin data}},
-    author = {Allison Marie Horst and Alison Presmanes Hill and Kristen B Gorman},
+
+@Manual{here,
+	author = {Kirill M\"{u}ller},
+	year = 2020,
+	title = {{here: A Simpler Way to Find Your Files}},
+	url = {https://CRAN.R-project.org/package=here},
+	note = {R package version 1.0.1},
+}
+
+@Manual{citeknitr,
+  title = {knitr: A General-Purpose Package for Dynamic Report Generation in R},
+  author = {Yihui Xie},
+  year = {2020},
+  note = {R package version 1.30},
+  url = {https://yihui.org/knitr/},
+}
+  
+@Manual{citekableExtra,
+    title = {kableExtra: Construct Complex Table with 'kable' and Pipe Syntax},
+    author = {Hao Zhu},
     year = {2020},
-    note = {R package version 0.1.0},
-    doi = {10.5281/zenodo.3960218},
-    url = {https://allisonhorst.github.io/palmerpenguins/},
+    note = {R package version 1.3.1},
+    url = {https://CRAN.R-project.org/package=kableExtra},
   }
   
   
@@ -68,7 +64,6 @@
     url = {https://tellingstorieswithdata.com/}
   }  
   
-  
 
 @Manual{shelter,
     title = {Deaths of Shelter Residents},
@@ -77,3 +72,153 @@
     note = {As accessed 2024-10-02.},
     url = {https://open.toronto.ca/dataset/deaths-of-shelter-residents/},
   }  
+  
+
+@Book{ggplot2,
+    author = {Hadley Wickham},
+    title = {{ggplot2: Elegant Graphics for Data Analysis}},
+    publisher = {Springer-Verlag New York},
+    year = {2016},
+    isbn = {978-3-319-24277-4},
+    url = {https://ggplot2.tidyverse.org},
+  }
+  
+
+@Article{citemodelsummary,
+    title = {{modelsummary}: Data and Model Summaries in {R}},
+    author = {Vincent Arel-Bundock},
+    journal = {Journal of Statistical Software},
+    year = {2022},
+    volume = {103},
+    number = {1},
+    pages = {1--23},
+    doi = {10.18637/jss.v103.i01},
+  }
+  
+@Manual{citearrow,
+    title = {arrow: Integration to 'Apache' 'Arrow'},
+    author = {Neal Richardson and Ian Cook and Nic Crane and Dewey Dunnington and Romain François and Jonathan Keane and Dragoș Moldovan-Grünfeld and Jeroen Ooms and Jacob Wujciak-Jens and {Apache Arrow}},
+    year = {2024},
+    note = {R package version 17.0.0.1},
+    url = {https://CRAN.R-project.org/package=arrow},
+  }
+  
+@Manual{citesjplot,
+    title = {sjPlot: Data Visualization for Statistics in Social Science},
+    author = {Daniel Lüdecke},
+    year = {2024},
+    note = {R package version 2.8.17},
+    url = {https://CRAN.R-project.org/package=sjPlot},
+  }
+  
+@Manual{citegridextra,
+    title = {gridExtra: Miscellaneous Functions for "Grid" Graphics},
+    author = {Baptiste Auguie},
+    year = {2017},
+    note = {R package version 2.3},
+    url = {https://CRAN.R-project.org/package=gridExtra},
+  }
+  
+@Manual{citebroommixed,
+    title = {broom.mixed: Tidying Methods for Mixed Models},
+    author = {Ben Bolker and David Robinson},
+    year = {2024},
+    note = {R package version 0.2.9.6},
+    url = {https://CRAN.R-project.org/package=broom.mixed},
+  }
+  
+@Article{citebayestestr,
+    title = {bayestestR: Describing Effects and their Uncertainty, Existence and Significance within the Bayesian Framework.},
+    author = {Dominique Makowski and Mattan S. Ben-Shachar and Daniel Lüdecke},
+    journal = {Journal of Open Source Software},
+    doi = {10.21105/joss.01541},
+    year = {2019},
+    number = {40},
+    volume = {4},
+    pages = {1541},
+    url = {https://joss.theoj.org/papers/10.21105/joss.01541},
+  }
+  
+@Manual{citeopendatatoronto,
+    title = {opendatatoronto: Access the City of Toronto Open Data Portal},
+    author = {Sharla Gelfand},
+    year = {2022},
+    note = {R package version 0.1.5},
+    url = {https://CRAN.R-project.org/package=opendatatoronto},
+  }
+
+@Manual{citescales,
+    title = {scales: Scale Functions for Visualization},
+    author = {Hadley Wickham and Thomas Lin Pedersen and Dana Seidel},
+    year = {2023},
+    note = {R package version 1.3.0},
+    url = {https://CRAN.R-project.org/package=scales},
+  }
+  
+@Article{tphlicense,
+    title = {Open Data License},
+    author = {{City of Toronto}},
+    url = {https://open.toronto.ca/open-data-license/},
+  }
+  
+@Dataset{vehiclecollision,
+  author = {{City of Toronto}},
+  title = {Police Annual Statistical Report - Traffic Collision},
+  year = {2024},
+  url = {https://open.toronto.ca/dataset/police-annual-statistical-report-traffic-collisions/},
+  note = {Accessed: 2024-11-24, Data refreshed: 2024-10-31},
+  publisher = {Toronto Police Services},
+}
+
+@Manual{annual_statistics_report,
+  author = {{Toronto Police Service}},
+  title = {Annual Statistical Report},
+  year = {2023},
+  url = {https://data.torontopolice.on.ca/pages/annualstatisticalreport},
+  note = {Accessed: 2024-09-27},
+  publisher = {Toronto Police Service},
+}
+
+@online{streetsblog2021,
+  author = {Kea Wilson},
+  title = {Why U.S. Car Crash Reporting Is Broken},
+  year = {2021},
+  month = {July},
+  url = {https://usa.streetsblog.org/2021/07/20/why-u-s-car-crash-reporting-is-broken},
+  note = {Accessed: 2024-11-30},
+}
+
+@Dataset{alternativedataset,
+  author = {{City of Toronto}},
+  title = {Motor Vehicle Collisions involving Killed or Seriously Injured Persons},
+  year = {2024},
+  url = {https://open.toronto.ca/dataset/motor-vehicle-collisions-involving-killed-or-seriously-injured-persons/},
+  note = {Accessed: 2024-11-27, Data refreshed: 2024-10-15},
+  publisher = {Toronto Police Services},
+}
+
+@Article{citetestthat,
+    author = {Hadley Wickham},
+    title = {testthat: Get Started with Testing},
+    journal = {The R Journal},
+    year = {2011},
+    volume = {3},
+    pages = {5--10},
+    url = {https://journal.r-project.org/archive/2011-1/RJournal_2011-1_Wickham.pdf},
+  }
+  
+@Online{tps_mvc_reports,
+  author = {{Toronto Police Service}},
+  title = {Motor Vehicle Collision Reports},
+  year = {n.d.},
+  url = {https://www.tps.ca/services/records-release/motor-vehicle-collision-reports/},
+  note = {Accessed: 2024-11-27},
+}
+
+@Manual{mvcr_guide,
+  title = {Motor Vehicle Collision Report Guide},
+  author = {{Ontario Ministry of Transportation}},
+  year = {n.d.},
+  url = {https://intra.stage.ecollision.mto.gov.on.ca/eCollision/pdf/MVCRGuide.pdf},
+  note = {Accessed: 2024-11-29},
+}
