@@ -951,11 +951,11 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
 #### Interaction Terms {#sec-appendix-modelcard-interaction}
 
 - **Hour and Motorcycle**:
-  - `hour1 × motorcycle`: 31.900, significant interaction in early morning hours, suggesting motorcycle accidents are more likely during certain hours.
-  - Other significant hours for motorcycle collisions are `hour6 × motorcycle` (51.053) and `hour9 × motorcycle` (-66.051).
+  - `hour1 × motorcycle`: 33.237, significant interaction in early morning hours, suggesting motorcycle accidents are more likely during certain hours.
+  - Other significant hours for motorcycle collisions are `hour12 × motorcycle` (54.822) and `hour23 × motorcycle` (37.984).
 - **Hour and Pedestrian**:
-  - `hour1 × pedestrian`: 15.095, significant pedestrian accidents in the early morning hours.
-  - Other significant hours include `hour2 × pedestrian` (29.594) and `hour5 × pedestrian` (23.943), highlighting peak pedestrian accident hours.
+  - `hour1 × pedestrian`: 15.758, significant pedestrian accidents in the early morning hours.
+  - Other significant hours include `hour2 × pedestrian` (29.368) and `hour5 × pedestrian` (22.835), highlighting peak pedestrian accident hours.
   
 ### Model Performance Metrics {#sec-appendix-modelcard-performance}
 
