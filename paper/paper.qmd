@@ -1,5 +1,6 @@
 ---
-title: "Predicting Fatalities in Toronto Car Crashes: Analyzing the Impact of Time, Vehicle Type, and Other Collision Determinants"
+title: "Predicting Fatalities in Toronto Car Crashes: Analyzing the Impact of Time, Vehicle Type, and Other Collision Determinants from 2015 to 2024"
+subtitle: "Vehicle Accidents Involving Motorcyclists and Pedestrians in the Evening Significantly Increases Fatality Risk"
 author: 
   - Kevin Roe
 thanks: "Code and data are available at: [https://github.com/Kanghyunroe/traffic_collisions/tree/main](https://github.com/Kanghyunroe/traffic_collisions/tree/main)."
