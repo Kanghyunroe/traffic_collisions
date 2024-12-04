@@ -1013,13 +1013,47 @@ pp_check(prediction_model) + theme_minimal()
 #| eval: true
 #| message: false
 #| warning: false
-#| fig-height: 15
-#| fig-width: 20
+#| fig-height: 13
+#| fig-width: 10
 #| label: fig-convergencecheckTrace
 #| fig-cap: "Checking the convergence of the MCMC algorithm - Trace"
 
-# Generate the trace plot
-plot(prediction_model, "trace") + theme_minimal()
+# Had to create my own trace plots because I couldn't adjust the formula
+# Extract parameter names
+trace_data <- as.data.frame(as.matrix(prediction_model))
+params <- colnames(trace_data)
+param_chunks <- split(params, ceiling(seq_along(params) / 20))
+
+# Function to plot trace plots
+plot_trace <- function(params_subset, data, title) {
+  data %>%
+    select(all_of(params_subset)) %>%
+    pivot_longer(cols = everything(), names_to = "Parameter", values_to = "Value") %>%
+    ggplot(aes(x = rep(1:nrow(data), length(params_subset)), y = Value, color = Parameter)) +
+    geom_line() +
+    facet_wrap(~ Parameter, scales = "free", ncol = 4) +  
+    theme_minimal() +
+    labs(title = title, x = "Iteration", y = "Value") +
+    theme(legend.position = "none") + 
+    theme(
+      plot.margin = margin(t = 5, r = 5, b = 5, l = 10),  
+      axis.text.x = element_text(size = 5, angle = 45, hjust = 1), 
+      axis.text.y = element_text(size = 5), 
+      plot.title = element_text(size = 10, hjust = 0.5), 
+      strip.text = element_text(size = 7))
+}
+
+# Generate individual trace plots for each chunk
+trace_plots <- list()
+for (i in seq_along(param_chunks)) {
+  trace_plots[[i]] <- plot_trace(
+    params_subset = param_chunks[[i]],
+    data = trace_data,
+    title = paste("Trace Plots (Part", i, ")")
+  )
+}
+
+grid.arrange(grobs = trace_plots, ncol = 2)
 ```
 
 ```{r}
@@ -1028,11 +1062,17 @@ plot(prediction_model, "trace") + theme_minimal()
 #| message: false
 #| warning: false
 #| fig-height: 13
+#| fig-width: 10
 #| label: fig-convergencecheckRhat
 #| fig-cap: "Checking the convergence of the MCMC algorithm - Rhat"
 plot(prediction_model, "rhat") + theme_minimal()
+
 ```
+\newpage
+
 ## Model Results {#sec-appendix-results}
+
+Please find the results to our model in @tbl-modelresults1, @tbl-modelresults2, and @fig-coefficient-estimates.
 
 ```{r}
 #| echo: false
