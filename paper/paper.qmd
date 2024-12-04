@@ -5,7 +5,7 @@ author:
 thanks: "Code and data are available at: [https://github.com/Kanghyunroe/traffic_collisions/tree/main](https://github.com/Kanghyunroe/traffic_collisions/tree/main)."
 date: today
 date-format: long
-abstract: "This study aims to predict the likelihood of fatality in motor vehicle collisions (MVCs) in Toronto from 2014 to 2023, using data on crash time, vehicle type, and collision characteristics. By analyzing the interaction between hour of the day and vehicle types, including motorcycles and pedestrians, the model identifies key elements contributing to fatal outcomes. Results indicate that late-afternoon to evening hours, particularly between 4 PM and 11 PM, show a higher likelihood of fatalities, with motorcycles and pedestrians significantly increasing fatality risk. The model achieved a high predictive accuracy, demonstrating its potential in informing safety policies and interventions in Toronto."
+abstract: "This study aims to predict the likelihood of fatality in motor vehicle collisions (MVCs) in Toronto from 2014 to 2023, using data on crash time, vehicle type, and collision characteristics. By analyzing the interaction between hour of the day and vehicle types, including motorcycles and pedestrians, the model identifies key elements contributing to fatal outcomes. Results indicate that late-afternoon to evening hours, particularly between 5 PM and 11 PM, show a higher likelihood of fatalities, with motorcycles and pedestrians significantly increasing fatality risk. The model achieved a high predictive accuracy, demonstrating its potential in informing safety policies and interventions in Toronto."
 format: pdf
 number-sections: true
 toc: true
@@ -48,7 +48,7 @@ Automobile fatalities are a leading cause of death worldwide, posing a public he
 
 The estimand of interest is the log-adjusted probability of a fatality occurring in a MVC. Specifically, we aim to quantify how specific environmental variables increase or decrease the likelihood of a fatality. By applying inferential analysis through Bayesian linear models, we assess not only the magnitude of these effects, but their underlying uncertainties.
 
-Our analysis identifies key predictors of vehicular accident fatalities, emphasizing heightened risks for motorcyclists and pedestrians, especially during rush hours (4PM to 5PM) and late evenings (11:00 PM). Motorcycle collisions in the evening show a fatality likelihood of around 66%. Collision type variables, such as injury and property damage collisions, significantly lower fatality risks, while police division and year have minimal impact. However, variability in estimates, particularly for motorcyclist and automobile predictors, highlights uncertainty in their precise effects, underscoring the need for targeted interventions during high-risk times and for vulnerable populations, informing policy decisions. 
+Our analysis identifies key predictors of vehicular accident fatalities, emphasizing heightened risks for motorcyclists and pedestrians, especially during rush hour and late evenings (11:00 PM). Motorcycle collisions in the evening show a fatality likelihood of around 53%. Collision type variables, such as injury and property damage collisions, significantly lower fatality risks, while police division and year have minimal impact. However, variability in estimates, particularly for motorcyclist and automobile predictors, highlights uncertainty in their precise effects, underscoring the need for targeted interventions during high-risk times and for vulnerable populations, informing policy decisions. 
 
 The remainder of this paper is structured as follows: @sec-data describes the dataset and methodology and @sec-model exhibits the use of inferential models. @sec-results presents the results of the analysis, detailing the observed relationships between likelihood of death and various circumstantial variables. @sec-discussion discusses the broader implications and limitations of our findings. @sec-appendix presents a detailed idealized methodology to improve data collection, a model card, and additional model summary and diagnostic information.  
 
@@ -745,7 +745,7 @@ Another important limitation is the potential for omitted variable bias and unme
 
 To assess model reliability, we examined several key metrics. Convergence metrics, such as Rhat values, were very close to 1 for all parameters, indicating strong convergence. Additionally, the effective sample size $n_{\text{eff}}$ was high across all parameters, suggesting low autocorrelation and contributing to model stability. See more details of our model diagnostics in @sec-appendix-diagnostics.
 
-@tbl-modelresults1 and @tbl-modelresults2 presents the estimated coefficients for the predictors in our GLM model. These coefficients fit into the GLM equation, \ref{eq:logit}, allowing us to interpret the impact of each predictor on the likelihood of fatality in a vehicular accident. Most notably, motorcyclist (17.036) and pedestrian (6.809) collisions exhibit substantial positive associations with fatality occurrence, which is in line with expectations. Moreover, motorcyclist accidents during rush hour (hour 16 and 17) have the highest coefficients at 40.4 and 26.8, respectively, and during the late evening, such as at 11:00 PM (39.365), indicating that a collision involving a motorcycle during rush hour or late evening is around 66\% likely to result in a fatality. We also find similar results with pedestrians as well. The type of collision variables all have a significant negative effect on the likelihood of death, as well.However, police division and year don't seem to have a significant impact on the likelihood of death. 
+@tbl-modelresults1 and @tbl-modelresults2 presents the estimated coefficients for the predictors in our GLM model. These coefficients fit into the GLM equation, \ref{eq:logit}, allowing us to interpret the impact of each predictor on the likelihood of fatality in a vehicular accident. Most notably, motorcyclist (10.319) and pedestrian (6.766) collisions exhibit substantial positive associations with fatality occurrence, which is in line with expectations. Moreover, motorcyclist accidents during rush hour (5 PM) have the highest coefficients at 23.656, and during the late evening, such as at 11:00 PM (37.984), indicating that a collision involving a motorcycle during rush hour or late evening is around 53\% likely to result in a fatality. We also find similar results with pedestrians as well. The type of collision variables all have a significant negative effect on the likelihood of death, as well.However, police division and year don't seem to have a significant impact on the likelihood of death. 
 
 @fig-coefficient-estimates represents the model coefficients, with error bars indicating the confidence interval for each estimate. While most variables are relatively in line, it seems that the interaction terms all have wide confidence intervals, suggesting high variability in its estimates. All plots can be found in @sec-appendix-results. 
 
@@ -757,7 +757,7 @@ The results of this analysis both validate and challenge several common assumpti
 
 ### Motorcyclists: The Most Vulnerable Group 
 
-In @tbl-modelresults1 and @tbl-modelresults2, the coefficient of 17.036 for motorcyclists indicates that they are the most at-risk group in terms of MVC fatalities. This result strongly aligns with the widely recognized vulnerability of motorcyclists in traffic accidents. Motorcycles, by their very design, providing little protection compared to other vehicles. In the event of a crash, motorcyclists are more likely to suffer severe injuries due to the lack of structural safeguards such as airbags, seat belts, or the protective frame that cars provide. Additionally, their smaller size makes them less visible to other drivers, increasing the likelihood of collisions. This heightened risk is compounded by the fact that motorcycles are often involved in high-speed crashes, particularly on highways or in urban environments with high traffic volumes. The coefficient underscores the need for targeted interventions, such as improved rider safety training, better infrastructure (e.g., dedicated motorcycle lanes), and stricter regulations on helmet use.
+In @tbl-modelresults1 and @tbl-modelresults2, the coefficient of 10.319 for motorcyclists indicates that they are the most at-risk group in terms of MVC fatalities. This result strongly aligns with the widely recognized vulnerability of motorcyclists in traffic accidents. Motorcycles, by their very design, providing little protection compared to other vehicles. In the event of a crash, motorcyclists are more likely to suffer severe injuries due to the lack of structural safeguards such as airbags, seat belts, or the protective frame that cars provide. Additionally, their smaller size makes them less visible to other drivers, increasing the likelihood of collisions. This heightened risk is compounded by the fact that motorcycles are often involved in high-speed crashes, particularly on highways or in urban environments with high traffic volumes. The coefficient underscores the need for targeted interventions, such as improved rider safety training, better infrastructure (e.g., dedicated motorcycle lanes), and stricter regulations on helmet use.
 
 ### Pedestrians
 
@@ -765,7 +765,7 @@ Similarly, shown in @tbl-modelresults1, the coefficient of 6.809 for pedestrians
 
 ### Environmental Variables
 
-The analysis also highlights the significant role that environmental variables—specifically, the time of day—play in MVC fatalities. During rush hours (particularly between hours 16 and 17) and late evenings (around 11:00 PM), the likelihood of a fatality, especially in motorcycle crashes, increases substantially. The 66% fatality likelihood for motorcycle crashes during these times suggests that several environmental and behavioral elements may be at play. During rush hours, the density of traffic can lead to higher stress levels among drivers, potentially contributing to reckless driving, lane changes, or a lack of attention to motorcyclists. Additionally, the rush-hour period coincides with fatigue, both for drivers who may have been on the road for extended periods and for motorcyclists who may be navigating more complex, congested traffic conditions.
+The analysis also highlights the significant role that environmental variables—specifically, the time of day—play in MVC fatalities. During rush hour and late evenings (around 11:00 PM), the likelihood of a fatality, especially in motorcycle crashes, increases substantially. The 53% fatality likelihood for motorcycle crashes during these times suggests that several environmental and behavioral elements may be at play. During rush hours, the density of traffic can lead to higher stress levels among drivers, potentially contributing to reckless driving, lane changes, or a lack of attention to motorcyclists. Additionally, the rush-hour period coincides with fatigue, both for drivers who may have been on the road for extended periods and for motorcyclists who may be navigating more complex, congested traffic conditions.
 
 Late evening crashes, on the other hand, are often linked to impaired driving and reduced visibility. Fatigue and alcohol impairment increase as the night progresses, leading to a higher likelihood of accidents that involve poor decision-making or delayed reactions. In the case of motorcycles, the combination of low visibility, decreased driver attention, and the increased risks of driving under the influence could explain why fatalities are particularly high during late-night hours. The study's findings align with common assumptions about these time-based risks, but they also reinforce the importance of implementing targeted interventions, such as stricter enforcement of impaired driving laws and improved lighting and signage to enhance visibility for motorcyclists during late-night hours.
 
@@ -852,102 +852,101 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
 
 ### Model Coefficients {#sec-appendix-modelcard-coefficients}
 
-- **Intercept**: 9.705
+- **Intercept**: 13.146
 - **Hour Coefficients**:
   - `hour1` through `hour23`: Varies with each hour of the day. Positive coefficients for hours between 2 PM to 11 PM suggest higher accident probability in these hours.
   - **Key Hours**:
-    - `hour2`: 1.920
-    - `hour3`: 2.908
-    - `hour6`: 0.966
-    - `hour7`: -1.673
-    - `hour8`: -0.511
-    - `hour21`: 1.237
-    - `hour22`: 0.631
-    - `hour23`: 1.572
+    - `hour2`: 1.449
+    - `hour3`: 3.851
+    - `hour6`: 0.350
+    - `hour7`: 0.233
+    - `hour8`: 0.080
+    - `hour21`: -0.184
+    - `hour22`: 0.821
+    - `hour23`: 2.342
 - **Vehicle Type Coefficients**:
-  - **Motorcycle**: 17.036, indicating a high likelihood of motorcycle-related collisions.
-  - **Pedestrian**: 6.832, showing the significance of pedestrian involvement in accidents.
-  - **Bicycle**: 3.809, showing a moderate likelihood of bicycle-related accidents.
-  - **Automobile**: 2.648, indicating that automobile-related collisions are also common.
+  - **Motorcycle**: 10.32, indicating a high likelihood of motorcycle-related collisions.
+  - **Pedestrian**: 6.77, showing the significance of pedestrian involvement in accidents.
+  - **Bicycle**: 3.45, showing a moderate likelihood of bicycle-related accidents.
+  - **Automobile**: -0.26 , indicating that automobile-related collisions are also common.
 - **Collision Type Coefficients**:
   - **Injury Collision**: -34.794, indicating a strong negative association with injury-related collisions.
   - **Fail to Remain Collision**: -29.912, indicating a strong negative association with collisions where the driver fails to remain.
   - **Property Damage Collision**: -30.004, showing a significant negative impact for property damage-related collisions.
 - **Police Division Coefficients**:
-  - `police_divisionD12`: 0.846, indicating division-specific effects, where division D12 has a positive association with collisions.
-  - `police_divisionD13`: 0.075
-  - `police_divisionD14`: -2.806
-  - `police_divisionD22`: 1.797
-  - `police_divisionD23`: 1.193
-  - `police_divisionD31`: 0.619
-  - `police_divisionD32`: 1.007
-  - `police_divisionD33`: 0.055
-  - `police_divisionD41`: 0.989
-  - `police_divisionD42`: 1.140
-  - `police_divisionD43`: 0.582
-  - `police_divisionD51`: 0.915
-  - `police_divisionD52`: 1.465
-  - `police_divisionD53`: 1.389
-  - `police_divisionD55`: 0.389
-  - `police_divisionNSA`: -4.040
+  - `police_divisionD12`: 0.06, indicating division-specific effects, where division D12 has a positive association with collisions.
+  - `police_divisionD13`: 0.17
+  - `police_divisionD14`: -1.00
+  - `police_divisionD22`: -0.09
+  - `police_divisionD23`: 0.93
+  - `police_divisionD31`: -0.65
+  - `police_divisionD32`: 0.21
+  - `police_divisionD33`: 0.14
+  - `police_divisionD41`: 0.12
+  - `police_divisionD42`: 0.46
+  - `police_divisionD43`: 0.38
+  - `police_divisionD51`: -0.34
+  - `police_divisionD52`: 4.78
+  - `police_divisionD53`: -0.88
+  - `police_divisionD55`: -0.93
+  - `police_divisionNSA`: -3.24
 - **Year Coefficients**:
-  - `year2015`: -0.500
-  - `year2016`: 0.329
-  - `year2017`: 0.412
-  - `year2018`: 0.165
-  - `year2019`: -0.025
-  - `year2020`: 0.021
-  - `year2021`: 0.079
-  - `year2022`: 1.947, showing a significant increase in collisions during this year.
-  - `year2023`: -1.708, showing a decrease in collisions during this year.
-  - `year2024`: -0.210
+  - `year2015`: 1.03
+  - `year2016`: 1.47
+  - `year2017`: 1.18
+  - `year2018`: 0.93
+  - `year2019`: 0.55
+  - `year2020`: 0.61
+  - `year2021`: 1.85
+  - `year2022`: 3.17, showing a significant increase in collisions during this year.
+  - `year2023`: 0.14
+  - `year2024`: 0.75
 - **Interaction Terms**:
   - **Hour × Motorcycle**:
-    - `hour1 × motorcycle`: 31.900
-    - `hour2 × motorcycle`: 33.094
-    - `hour3 × motorcycle`: 33.377
-    - `hour4 × motorcycle`: 33.633
-    - `hour6 × motorcycle`: 51.053
-    - `hour7 × motorcycle`: 52.055
-    - `hour8 × motorcycle`: 55.746
-    - `hour9 × motorcycle`: -66.051
-    - `hour10 × motorcycle`: 27.802
-    - `hour12 × motorcycle`: 51.049
-    - `hour13 × motorcycle`: 18.620
-    - `hour14 × motorcycle`: -12.621
-    - `hour15 × motorcycle`: -11.489
-    - `hour16 × motorcycle`: 32.651
-    - `hour17 × motorcycle`: 20.150
-    - `hour18 × motorcycle`: 12.044
-    - `hour19 × motorcycle`: -11.899
-    - `hour20 × motorcycle`: -5.807
-    - `hour21 × motorcycle`: 21.915
-    - `hour22 × motorcycle`: 9.369
-    - `hour23 × motorcycle`: 34.897
+    - `hour1 × motorcycle`: 33.237
+    - `hour2 × motorcycle`: 35.448
+    - `hour3 × motorcycle`: 35.467
+    - `hour4 × motorcycle`: 36.943
+    - `hour6 × motorcycle`: 57.233
+    - `hour7 × motorcycle`: -6.889
+    - `hour8 × motorcycle`: 9.962
+    - `hour10 × motorcycle`: 29.521
+    - `hour12 × motorcycle`: 54.822
+    - `hour13 × motorcycle`: 19.375
+    - `hour14 × motorcycle`: 24.927
+    - `hour15 × motorcycle`: 23.135
+    - `hour16 × motorcycle`: -5.637
+    - `hour17 × motorcycle`: 23.656
+    - `hour18 × motorcycle`: -5.293
+    - `hour19 × motorcycle`: 24.156
+    - `hour20 × motorcycle`: -2.714
+    - `hour21 × motorcycle`: -3.445
+    - `hour22 × motorcycle`: 11.598
+    - `hour23 × motorcycle`: 37.984
   - **Hour × Pedestrian**:
-    - `hour1 × pedestrian`: 15.095
-    - `hour2 × pedestrian`: 29.594
-    - `hour3 × pedestrian`: 20.771
-    - `hour4 × pedestrian`: 19.986
-    - `hour5 × pedestrian`: 23.943
-    - `hour6 × pedestrian`: 9.778
-    - `hour7 × pedestrian`: 1.434
-    - `hour8 × pedestrian`: 0.484
-    - `hour9 × pedestrian`: 1.831
-    - `hour10 × pedestrian`: 1.895
-    - `hour11 × pedestrian`: 15.280
-    - `hour12 × pedestrian`: 9.497
-    - `hour13 × pedestrian`: 1.397
-    - `hour14 × pedestrian`: 12.171
-    - `hour15 × pedestrian`: -0.552
-    - `hour16 × pedestrian`: 0.453
-    - `hour17 × pedestrian`: 0.272
-    - `hour18 × pedestrian`: -5.210
-    - `hour19 × pedestrian`: -0.707
-    - `hour20 × pedestrian`: 7.720
-    - `hour21 × pedestrian`: 12.510
-    - `hour22 × pedestrian`: 1.760
-    - `hour23 × pedestrian`: -2.690
+    - `hour1 × pedestrian`: 15.758
+    - `hour2 × pedestrian`: 29.368
+    - `hour3 × pedestrian`: 18.546
+    - `hour4 × pedestrian`: 20.723
+    - `hour5 × pedestrian`: 22.835
+    - `hour6 × pedestrian`: 1.713
+    - `hour7 × pedestrian`: 17.229
+    - `hour8 × pedestrian`: -2.876
+    - `hour9 × pedestrian`: 0.983
+    - `hour10 × pedestrian`: 0.973
+    - `hour11 × pedestrian`: 9.320
+    - `hour12 × pedestrian`: -2.071
+    - `hour13 × pedestrian`: -1.027
+    - `hour14 × pedestrian`: 12.206
+    - `hour15 × pedestrian`: -0.145
+    - `hour16 × pedestrian`: 0.042
+    - `hour17 × pedestrian`: -0.494
+    - `hour18 × pedestrian`: -0.977
+    - `hour19 × pedestrian`: 0.090
+    - `hour20 × pedestrian`: 1.757
+    - `hour21 × pedestrian`: -0.436
+    - `hour22 × pedestrian`: 14.945
+    - `hour23 × pedestrian`: 12.795
   
 #### Interaction Terms {#sec-appendix-modelcard-interaction}
 
@@ -961,29 +960,29 @@ This model predicts the occurrence of motor vehicle collisions (MVCs) based on v
 ### Model Performance Metrics {#sec-appendix-modelcard-performance}
 
 - **R²**: 0.992, indicating excellent fit to the data.
-- **Log Likelihood**: -0.082
-- **Effective Log Predictive Density (ELPD)**: -16.2, with an associated standard error of 2.2.
-- **Leave-One-Out Information Criterion (LOOIC)**: 32.4, with a standard error of 4.4.
+- **Log Likelihood**: -0.326
+- **Effective Log Predictive Density (ELPD)**: -17.6, with an associated standard error of 3.1.
+- **Leave-One-Out Information Criterion (LOOIC)**: 35.1, with a standard error of 6.2.
 - **Watanabe-Akaike Information Criterion (WAIC)**: 21.3
 - **Root Mean Squared Error (RMSE)**: 0.00, indicating near-perfect predictive accuracy.
 
 ### Training Time {#sec-appendix-modelcard-time}
 - **Chain 1**:
-  - Warm-up: 29.99 seconds
-  - Sampling: 26.11 seconds
-  - Total: 56.1 seconds
+  - Warm-up: 24.63 seconds
+  - Sampling: 18.63 seconds
+  - Total: 43.26 seconds
 - **Chain 2**:
-  - Warm-up: 19.62 seconds
-  - Sampling: 17.23 seconds
-  - Total: 36.84 seconds
+  - Warm-up: 22.78 seconds
+  - Sampling: 26.92 seconds
+  - Total: 49.70 seconds
 - **Chain 3**:
-  - Warm-up: 19.88 seconds
-  - Sampling: 19.30 seconds
-  - Total: 39.18 seconds
+  - Warm-up: 31.42 seconds
+  - Sampling: 24.05 seconds
+  - Total: 55.47 seconds
 - **Chain 4**:
-  - Warm-up: 22.40 seconds
-  - Sampling: 19.17 seconds
-  - Total: 41.57 seconds
+  - Warm-up: 26.75 seconds
+  - Sampling: 27.47 seconds
+  - Total: 54.21 seconds
 
 ### Conclusion {#sec-appendix-modelcard-conclusion}
 The model performs exceptionally well in predicting motor vehicle collisions based on hour, vehicle type, and other variables, with the highest predictive power for motorcycle-related accidents. Key interactions, such as between hour and motorcycle or pedestrian, highlight the importance of specific hours of the day in predicting collision occurrences. This model can be used for more effective traffic safety planning and intervention strategies.
