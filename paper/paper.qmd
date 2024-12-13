@@ -100,7 +100,7 @@ However, after the transformation, the outcome variable now takes on binary valu
 
 ```{r}
 #| label: fig-fatalities-cleaned
-#| fig-cap: Distribution of Fatalities in the Cleaned Dataset   
+#| fig-cap: Distribution of Fatalities Variable in the Cleaned Dataset    
 #| echo: false
 #| message: false
 #| warning: false
@@ -160,7 +160,7 @@ The hour variable indicates the time at which the accident occurred using the 24
 #| message: false
 #| warning: false
 #| label: tbl-hour
-#| tbl-cap: Summary of the Hour Variable 
+#| tbl-cap: Number of MVCs for Each Hour  
 #| tbl-align: center
 #| tbl-width: 82%
 
@@ -185,7 +185,7 @@ summary_stats %>%
 
 ```{r}
 #| label: fig-hour
-#| fig-cap: Distribution of the Hour Variable  
+#| fig-cap: Graphical Representation of Number of Fatalities for Each Hour 
 #| echo: false
 #| message: false
 #| warning: false
@@ -203,13 +203,13 @@ ggplot(analysis_data, aes(x = hour)) +
 
 ```
 
-### Type of Crash {#sec-data-predictor-crash}
+### Collision Type (Injury, Fail to Remain, and Property Damage Collisions) {#sec-data-predictor-crash}
 
 Beyond identifying fatalities, the Motor Vehicle Collision Reports notes if the crash was one of three types: an injury collision, a fail to remain collision, and a property damage collision. A personal injury collision occur when an individual involved in a MVC suffers personal injuries. Fail to remain collisions are recorded when an individual involved in a collision fail to stop and provide their information at the scene of a collision. Property damage collisions occur when an individual has been damaged in a collision or the value of damages is less than \$2000 for all parties. The distribution and summary statistics of these three variables can be found in @fig-crashtype and @tbl-crashtype. The results in @tbl-crashtype show that crashes that classify under these three categories usually do not lead to death. 
 
 ```{r}
 #| label: fig-crashtype
-#| fig-cap: Breakdown of Each Collision Type by Fatalities  
+#| fig-cap: Breakdown of Distribution of Each Collision Type  
 #| echo: false
 #| message: false
 #| warning: false
@@ -238,13 +238,14 @@ ggplot(analysis_data_long, aes(x = collision_type, fill = factor(fatalities))) +
   scale_y_continuous(labels = label_number(scale = 1, accuracy = 1))
 
 ```
+\newpage
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
 #| label: tbl-crashtype
-#| tbl-cap: Breakdown of MVCs Into the Different Categories, Broken Down by Fatalities
+#| tbl-cap: Breakdown of MVCs Into the Different Crash Type Categories by Fatalities
 #| tbl-align: center
 #| tbl-width: 82%
 
@@ -284,7 +285,6 @@ summary_stats %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
 
 ```
-
 ### Automobile {#sec-data-predictor-automobile}
 
 The automobile variable is a indicator variable to show if a collision involved a person in an automobile. In the raw dataset, the variable was labeled as Yes, No, None or N/R (Not Recorded). We labelled Not Recorded as NA because there is no reliable way of characterizing the variable. Further, we labeled No and None as 0 and Yes as 1, where 1 represents that an automobile was involved and 0 represents that an automobile was not, such as a crash between two motorcycles. We also employed this method for the following variables: motorcycle, passenger, and pedestrian. 
@@ -295,7 +295,7 @@ The automobile variable is a indicator variable to show if a collision involved 
 
 ```{r}
 #| label: fig-automobile
-#| fig-cap: Distribution of the Automobile Variable  
+#| fig-cap: Graphical Representation of the Automobile Variable's Values 
 #| echo: false
 #| message: false
 #| warning: false
@@ -319,7 +319,7 @@ ggplot(analysis_data, aes(x = automobile)) +
 #| message: false
 #| warning: false
 #| label: tbl-automobile
-#| tbl-cap: Summary of the Automobile Variable 
+#| tbl-cap: Breakdown of Automobile Variable Based on Fatalities Occured
 #| tbl-align: center
 #| tbl-width: 82%
 
@@ -345,7 +345,7 @@ The motorcycle variable is another indicator variable to show that whether the c
 
 ```{r}
 #| label: fig-motorcycle
-#| fig-cap: Distribution of the Automobile Variable  
+#| fig-cap: Graphical Representation of the Motorcycle Variable's Values
 #| echo: false
 #| message: false
 #| warning: false
@@ -353,7 +353,7 @@ The motorcycle variable is another indicator variable to show that whether the c
 #| fig-height: 2.5
 #| fig-align: center
 
-# Plot distribution of Hour Variable
+# Plot distribution of Motorcycle Variable
 ggplot(analysis_data, aes(x = motorcycle)) +
   geom_bar(fill = "orange", alpha = 0.7, color = "black") +
   theme_minimal() +
@@ -369,7 +369,7 @@ ggplot(analysis_data, aes(x = motorcycle)) +
 #| message: false
 #| warning: false
 #| label: tbl-motorcycle
-#| tbl-cap: Summary of the Automobile Variable 
+#| tbl-cap: Summary of the Motorcycle Variable Based on Fatality Occurrence  
 #| tbl-align: center
 #| tbl-width: 82%
 
@@ -395,7 +395,7 @@ The passenger variable is an indicator variable that highlights if the collision
 
 ```{r}
 #| label: fig-passenger
-#| fig-cap: Distribution of the Passenger Variable  
+#| fig-cap: Graphical Representation of the Passenger Variable's Values
 #| echo: false
 #| message: false
 #| warning: false
@@ -403,7 +403,7 @@ The passenger variable is an indicator variable that highlights if the collision
 #| fig-height: 2.5
 #| fig-align: center
 
-# Plot distribution of Hour Variable
+# Plot distribution of Passenger Variable
 ggplot(analysis_data, aes(x = passenger)) +
   geom_bar(fill = "blue", alpha = 0.7, color = "black") +
   theme_minimal() +
@@ -419,12 +419,12 @@ ggplot(analysis_data, aes(x = passenger)) +
 #| message: false
 #| warning: false
 #| label: tbl-passenger
-#| tbl-cap: Summary of the Passenger Variable 
+#| tbl-cap: Summary of the Passenger Variable Based on Fatality Occurrence 
 #| tbl-align: center
 #| tbl-width: 82%
 
 
-# Calculate summary statistics for the 'hour' variable
+# Calculate summary statistics for the 'passenger' variable
 summary_stats <- analysis_data %>%
   group_by(passenger) %>%
   summarize(
@@ -447,12 +447,12 @@ The pedestrian variable is an indicator variable that highlights if the collisio
 #| message: false
 #| warning: false
 #| label: tbl-pedestrian
-#| tbl-cap: Summary of the Pedestrian Variable 
+#| tbl-cap: Summary of the Pedestrian Variable Based on Fatality Occurrence
 #| tbl-align: center
 #| tbl-width: 82%
 
 
-# Calculate summary statistics for the 'hour' variable
+# Calculate summary statistics for the 'pedestrian' variable
 summary_stats <- analysis_data %>%
   group_by(pedestrian) %>%
   summarize(
@@ -468,7 +468,7 @@ summary_stats %>%
 ```
 ```{r}
 #| label: fig-pedestrian
-#| fig-cap: Distribution of the Pedestrian Variable  
+#| fig-cap: Graphical Representation of the Pedestrian Variable's Values
 #| echo: false
 #| message: false
 #| warning: false
@@ -476,7 +476,7 @@ summary_stats %>%
 #| fig-height: 2.5
 #| fig-align: center
 
-# Plot distribution of Hour Variable
+# Plot distribution of Pedestrian Variable
 ggplot(analysis_data, aes(x = pedestrian)) +
   geom_bar(fill = "red", alpha = 0.7, color = "black") +
   theme_minimal() +
@@ -492,7 +492,7 @@ The Police Division variable represents the police division where the collision 
 
 ```{r}
 #| label: fig-division
-#| fig-cap: Distribution of the Police Division
+#| fig-cap: Number of Collisions per Police Division 
 #| echo: false
 #| message: false
 #| warning: false
@@ -500,7 +500,7 @@ The Police Division variable represents the police division where the collision 
 #| fig-height: 2.5
 #| fig-align: center
 
-# Plot distribution of Hour Variable
+# Plot distribution of Police Division Variable
 ggplot(analysis_data, aes(x = police_division)) +
   geom_bar(fill = "magenta", alpha = 0.7, color = "black") +
   theme_minimal() +
@@ -516,7 +516,7 @@ ggplot(analysis_data, aes(x = police_division)) +
 #| message: false
 #| warning: false
 #| label: tbl-division
-#| tbl-cap: Summary of the Police Division Variable 
+#| tbl-cap: Summary of the Police Division Variable by Fatality Occurrence
 #| tbl-align: center
 #| tbl-width: 82%
 
@@ -621,7 +621,7 @@ summary_stats_motorcycle %>%
 
 ```{r}
 #| label: fig-hour-motorcycle
-#| fig-cap: Number of Fatalities by Hour for Motorcyclists
+#| fig-cap: Graphical Representation of Fatalities by Hour for Motorcyclists
 #| echo: false
 #| message: false
 #| warning: false
@@ -678,7 +678,7 @@ ggplot(pedestrian_fatalities, aes(x = hour, y = pedestrian_fatalities)) +
 #| message: false
 #| warning: false
 #| label: tbl-hour-pedestrian
-#| tbl-cap: Summary of Fatalities by Hour for Motorcyclists and Pedestrians
+#| tbl-cap: Graphical Representation of Fatalities by Hour for Pedestrians
 #| tbl-align: center
 #| tbl-width: 82%
 
